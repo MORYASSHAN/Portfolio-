@@ -173,3 +173,94 @@ export function boom() {
   o.start(t);
   o.stop(t + 1.4);
 }
+
+// bullet on sheet metal: inharmonic ring + a gritty tick
+export function metalHit(soft = false) {
+  const a = audio();
+  if (a.state !== 'running') return;
+  const t = a.currentTime;
+  const k = soft ? 0.4 : 1;
+  burst(a, t, { type: 'highpass', freq: 3000, peak: 0.35 * k, decay: 0.04 });
+  [540, 1310, 2270, 3480].forEach((f, i) => {
+    const o = a.createOscillator(), g = a.createGain();
+    o.type = 'sine';
+    o.frequency.value = f * (0.97 + Math.random() * 0.06);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime((0.16 / (i + 1)) * k, t + 0.003);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.5 - i * 0.08);
+    o.connect(g).connect(a.destination);
+    o.start(t); o.stop(t + 0.55);
+  });
+  for (let i = 0; i < 6; i++) {
+    burst(a, t + 0.02 + Math.random() * 0.25, { type: 'bandpass', freq: 4000 + Math.random() * 4000, q: 4, peak: 0.08 * k, decay: 0.03 });
+  }
+}
+
+// the sign goes up: huge noise blast, sub drop, crackle tail
+export function explosion() {
+  const a = audio();
+  if (a.state !== 'running') return;
+  const t = a.currentTime;
+  const body = burst(a, t, { type: 'lowpass', freq: 3000, peak: 1, attack: 0.01, decay: 2.4 });
+  body.frequency.setValueAtTime(3000, t);
+  body.frequency.exponentialRampToValueAtTime(160, t + 2);
+  const o = a.createOscillator(), g = a.createGain();
+  o.frequency.setValueAtTime(90, t);
+  o.frequency.exponentialRampToValueAtTime(24, t + 1.4);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(1, t + 0.02);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 1.8);
+  o.connect(g).connect(a.destination);
+  o.start(t); o.stop(t + 1.9);
+  for (let i = 0; i < 30; i++) {
+    burst(a, t + 0.2 + Math.random() * 2.5, { type: 'bandpass', freq: 1500 + Math.random() * 5000, q: 3, peak: 0.05 + Math.random() * 0.08, decay: 0.02 + Math.random() * 0.04, offset: Math.random() * 0.8 });
+  }
+}
+
+// heavy crash when the board hits the road
+export function crash() {
+  const a = audio();
+  if (a.state !== 'running') return;
+  const t = a.currentTime;
+  burst(a, t, { type: 'lowpass', freq: 1200, peak: 0.9, decay: 0.8 });
+  metalHit();
+  glassBreak();
+}
+
+// trigger pulled on an empty mag
+export function dryFire() {
+  const a = audio();
+  if (a.state !== 'running') return;
+  const t = a.currentTime;
+  burst(a, t, { type: 'bandpass', freq: 3200, q: 3, peak: 0.3, decay: 0.025 });
+  burst(a, t + 0.05, { type: 'bandpass', freq: 2200, q: 3, peak: 0.18, decay: 0.03 });
+}
+
+// big stage light slamming on
+export function switchOn() {
+  const a = audio();
+  if (a.state !== 'running') return;
+  const t = a.currentTime;
+  burst(a, t, { type: 'lowpass', freq: 900, peak: 0.45, decay: 0.12 });
+  burst(a, t, { type: 'bandpass', freq: 2600, q: 2, peak: 0.12, decay: 0.05 });
+  const o = a.createOscillator(), g = a.createGain();
+  o.frequency.setValueAtTime(70, t);
+  o.frequency.exponentialRampToValueAtTime(38, t + 0.25);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(0.5, t + 0.005);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
+  o.connect(g).connect(a.destination);
+  o.start(t); o.stop(t + 0.4);
+}
+
+// the whole screen cracking
+export function screenCrack() {
+  const a = audio();
+  if (a.state !== 'running') return;
+  const t = a.currentTime;
+  burst(a, t, { type: 'highpass', freq: 1200, peak: 0.9, decay: 0.18 });
+  burst(a, t, { type: 'lowpass', freq: 600, peak: 0.6, decay: 0.5 });
+  for (let i = 0; i < 10; i++) {
+    burst(a, t + Math.random() * 0.25, { type: 'bandpass', freq: 3000 + Math.random() * 5000, q: 5, peak: 0.15, decay: 0.03, offset: Math.random() * 0.8 });
+  }
+}

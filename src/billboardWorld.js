@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { createVegasSign } from './vegasSign.js';
 
 // The background photo is composited raw (no color conversion), so the 3D layer works in the
 // same display space: no linear conversion of colors/textures, output straight to the target.
@@ -327,6 +328,12 @@ export function createBillboardWorld() {
 
   const board = buildBillboard(photo, glowTex);
   scene.add(board.group);
+
+  // "Welcome to Fabulous Las Vegas" on the right-hand sidewalk, turned toward the road
+  const sign = createVegasSign(scene, glowTex);
+  sign.group.position.set(7.6, 0, -15.5);
+  sign.group.rotation.y = -0.42;
+  scene.add(sign.group);
   // panel text uses the page font; redraw once it has loaded
   if (document.fonts) document.fonts.load('600 64px "Oswald"').then(() => {
     board.panels.forEach((pn) => { drawPanel(pn.userData.canvas, pn.userData.info); pn.userData.tex.needsUpdate = true; });
@@ -491,17 +498,29 @@ export function createBillboardWorld() {
     });
   }
 
-  // ---- shooting: returns true when a tile was hit
+  // ---- shooting. Level 1: billboard tiles. Level 2: the Welcome sign.
   const raycaster = new THREE.Raycaster(), ndcV = new THREE.Vector2();
   const alive = new Set(board.tiles);
+  let level = 1;
   function shoot(ndcX, ndcY, nowMs) {
     panic(nowMs);
     camera.updateMatrixWorld();
     ndcV.set(ndcX, ndcY);
     raycaster.setFromCamera(ndcV, camera);
+
+    if (level === 2) {
+      const hit = raycaster.intersectObjects(sign.targets(), false)[0];
+      if (!hit) return { hit: false, kind: null };
+      return { hit: true, kind: 'sign', ...sign.hit(hit.object, hit.point, hit.uv) };
+    }
+
     const faces = [...alive].map((h) => h.children[1]);
     const hit = raycaster.intersectObjects(faces, false)[0];
-    if (!hit) return false;
+    if (!hit) {
+      const stray = raycaster.intersectObjects(sign.targets(), false)[0];
+      if (stray) sign.ping(stray.point);
+      return { hit: false, kind: stray ? 'ping' : null, tilesLeft: alive.size };
+    }
     const holder = hit.object.parent;
     alive.delete(holder);
     shatter(holder);
@@ -509,8 +528,10 @@ export function createBillboardWorld() {
     const panel = board.panels[holder.userData.index];
     panel.visible = true;
     panel.userData.revealedAt = nowMs;
-    return true;
+    return { hit: true, kind: 'tile', tilesLeft: alive.size };
   }
+
+  function setLevel(n) { level = n; }
 
   // ---- power-on state
   let power = 0, powerStart = -1;
@@ -575,6 +596,7 @@ export function createBillboardWorld() {
     }
     updateRunners(t, dt);
     updateShards(dt);
+    sign.update(t, dt, power);
 
     // gossip bubbles
     if (gossipOn) {
@@ -617,6 +639,6 @@ export function createBillboardWorld() {
     bubbles.forEach((b) => { b.next = nowMs + 900 + Math.random() * 3000; });
   }
 
-  return { scene, camera, setView, update, powerOn, shoot };
+  return { scene, camera, setView, update, powerOn, shoot, setLevel };
 }
 

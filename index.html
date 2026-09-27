@@ -21,18 +21,29 @@
     </svg>
   </div>
 
+  <div id="hud">
+    <div class="hud-objective" id="hud-objective"></div>
+    <div class="hud-song" id="hud-song"></div>
+    <div class="hud-ammo" id="hud-ammo"></div>
+    <div class="hud-toast" id="hud-toast"></div>
+    <div class="hud-action" id="hud-action"></div>
+  </div>
+
   <section id="intro">
     <div class="stage">
       <img class="host" src="/assets/host.png" alt="" />
       <div class="side">
         <div class="chat" id="chat"></div>
-        <button class="blood-btn" id="start" type="button">
-          <span class="label">Start the show</span>
-          <span class="drips" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
-        </button>
+        <div class="actions" id="actions"></div>
       </div>
     </div>
   </section>
+
+  <canvas id="finale" hidden></canvas>
+  <video id="finale-video" muted loop playsinline preload="none"></video>
+  <div id="story" aria-live="polite"></div>
+  <div id="story-count" aria-hidden="true"></div>
+  <div id="finale-hint" aria-hidden="true"><span class="mouse"><i></i></span><span>Scroll</span></div>
 
   <script type="module" src="/src/main.js"></script>
 </body>

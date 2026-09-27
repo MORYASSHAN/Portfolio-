@@ -1,13 +1,14 @@
-import { gunshot, glassBreak, crowdPanic } from './sound.js';
+import { gunshot, glassBreak, crowdPanic, metalHit, explosion, dryFire } from './sound.js';
 
-export function createShooter(vegas) {
+export function createShooter(vegas, { onShot, onAmmo } = {}) {
   const stage = document.getElementById('stage');
   const fx = document.getElementById('fx');
   const reticle = document.getElementById('reticle');
 
   let armed = false, lastShot = 0, panicked = false;
+  let ammo = null;               // null = unlimited
 
-  function spawn(cls, styles) {
+  function spawn(cls, styles = {}) {
     const el = document.createElement('div');
     el.className = cls;
     Object.assign(el.style, styles);
@@ -15,10 +16,10 @@ export function createShooter(vegas) {
     fx.appendChild(el);
   }
 
-  function shake(hard) {
-    stage.classList.remove('shake', 'shake-hard');
+  function shake(level) {
+    stage.classList.remove('shake', 'shake-hard', 'shake-huge');
     void stage.offsetWidth;
-    stage.classList.add(hard ? 'shake-hard' : 'shake');
+    stage.classList.add(level === 2 ? 'shake-huge' : level ? 'shake-hard' : 'shake');
   }
 
   function fire(x, y) {
@@ -26,15 +27,27 @@ export function createShooter(vegas) {
     if (now - lastShot < 170) return;
     lastShot = now;
 
+    if (ammo === 0) { dryFire(); onShot?.({ hit: false, kind: null, dry: true }, ammo); return; }
+    if (ammo !== null) { ammo--; onAmmo?.(ammo); }
+
     gunshot();
-    const { hit, muzzle: [mx, my] } = vegas.shoot(x, y);
+    const res = { ...vegas.shoot(x, y), x, y };
+    const [mx, my] = res.muzzle;
     const len = Math.hypot(x - mx, y - my), ang = Math.atan2(y - my, x - mx);
     spawn('tracer', { left: mx + 'px', top: my + 'px', width: len + 'px', transform: `rotate(${ang}rad)` });
     spawn('muzzle-light', { left: mx + 'px', top: my + 'px' });
     spawn('impact', { left: x + 'px', top: y + 'px' });
-    if (hit) glassBreak();
-    shake(hit);
+    if (res.kind === 'tile') glassBreak();
+    else if (res.kind === 'sign') metalHit();
+    else if (res.kind === 'ping') metalHit(true);
+    if (res.justDestroyed) {
+      explosion();
+      glassBreak();
+      spawn('blast-flash');
+      shake(2);
+    } else shake(res.hit);
     if (!panicked) { panicked = true; crowdPanic(); }
+    onShot?.(res, ammo);
   }
 
   function track(e) {
@@ -45,15 +58,22 @@ export function createShooter(vegas) {
   window.addEventListener('pointermove', track);
   window.addEventListener('pointerdown', (e) => {
     if (!armed || (e.button !== undefined && e.button !== 0)) return;
+    if (e.target.closest && e.target.closest('button')) return;   // HUD buttons aren't targets
     track(e);
     fire(e.clientX, e.clientY);
   });
 
-  // gun is in view from the moment the scene opens; shooting starts once it's fully out
   function arm() {
     armed = true;
     document.body.classList.add('armed');
   }
 
-  return { arm };
+  function disarm() {
+    armed = false;
+    document.body.classList.remove('armed');
+  }
+
+  function setAmmo(n) { ammo = n; onAmmo?.(n); }
+
+  return { arm, disarm, setAmmo, shake };
 }

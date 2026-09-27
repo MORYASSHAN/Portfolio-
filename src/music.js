@@ -29,6 +29,7 @@ const CLAP = [4, 12];
 const hz = (m) => 440 * Math.pow(2, (m - 69) / 12);
 
 let started = false;
+let master = null, timer = null;
 
 export function startMusic() {
   if (started) return;
@@ -36,7 +37,7 @@ export function startMusic() {
   const a = audio();
   a.resume();
 
-  const master = a.createGain();
+  master = a.createGain();
   master.gain.value = 0;
   master.gain.linearRampToValueAtTime(0.32, a.currentTime + 3);
   const comp = a.createDynamicsCompressor();
@@ -139,6 +140,16 @@ export function startMusic() {
       nextTime += STEP;
     }
   }
-  setInterval(schedule, 50);
+  timer = setInterval(schedule, 50);
   schedule();
+}
+
+// fade the beat out (when a real song takes over)
+export function stopMusic(fade = 1.2) {
+  if (!master) return;
+  const a = audio(), now = a.currentTime;
+  master.gain.cancelScheduledValues(now);
+  master.gain.setValueAtTime(master.gain.value, now);
+  master.gain.linearRampToValueAtTime(0, now + fade);
+  setTimeout(() => clearInterval(timer), fade * 1000 + 300);
 }

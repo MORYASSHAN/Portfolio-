@@ -187,3 +187,193 @@ body.armed #reticle { opacity: 1; }
   .host { height: min(48vh, 440px); margin-top: auto; }
   .bubble { font-size: 14px; }
 }
+
+/* ---------- host between levels (over the dimmed scene) ---------- */
+#intro[hidden] { display: none; }
+#intro.over-scene {
+  background: rgba(0, 0, 0, 0.74);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  animation: dim 0.5s ease;
+  transition: background 0.5s ease, backdrop-filter 0.5s ease;
+}
+#intro.over-scene.leaving { background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
+@keyframes dim { from { background: transparent; backdrop-filter: none; } }
+
+.actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.actions.songs { flex-direction: column; width: min(430px, 100%); gap: 10px; }
+
+/* song cards */
+.song-btn {
+  display: flex; align-items: center; gap: 14px; width: 100%;
+  padding: 12px 16px;
+  background: rgba(14, 14, 16, 0.94); color: #eee; text-align: left;
+  border: 1px solid rgba(255, 255, 255, 0.08); border-left: 3px solid #7a0000; border-radius: 12px;
+  cursor: pointer;
+  opacity: 0; transform: translateY(8px); pointer-events: none;
+  transition: opacity 0.45s ease, transform 0.45s ease, background 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+#intro.btn-in .song-btn { opacity: 1; transform: none; pointer-events: auto; }
+#intro.btn-in .song-btn:nth-child(2) { transition-delay: 0.1s, 0.1s, 0s, 0s, 0s; }
+#intro.btn-in .song-btn:nth-child(3) { transition-delay: 0.2s, 0.2s, 0s, 0s, 0s; }
+.song-btn:hover { background: #140404; border-color: rgba(255, 40, 40, 0.45); box-shadow: 0 8px 30px rgba(150, 0, 0, 0.35); }
+.song-btn:disabled { cursor: default; }
+.song-btn:disabled:not(.picked) { opacity: 0.35; }
+.song-btn.picked { border-color: #ff2a2a; background: #1a0303; }
+.song-btn .disc {
+  flex: none; width: 40px; height: 40px; border-radius: 50%;
+  background:
+    radial-gradient(circle, #1a1a1a 0 7%, #c8102e 8% 26%, transparent 27%),
+    repeating-radial-gradient(circle, #111 0 2px, #1d1d1f 2px 4px);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+.song-btn:hover .disc, .song-btn.picked .disc { animation: spin 1.6s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.song-btn .meta { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.song-btn .t { font: 600 15px/1.1 "Oswald", sans-serif; letter-spacing: 0.08em; text-transform: uppercase; }
+.song-btn .a { font-size: 12px; color: #9a9aa2; }
+
+/* ---------- HUD ---------- */
+#hud { position: fixed; inset: 0; z-index: 9; pointer-events: none; }
+#hud > * { position: absolute; opacity: 0; transition: opacity 0.4s ease, transform 0.4s ease; }
+#hud > .on { opacity: 1; }
+
+.hud-objective {
+  top: 18px; left: 50%; transform: translateX(-50%);
+  padding: 7px 14px; border-radius: 4px;
+  background: rgba(10, 6, 8, 0.72); border: 1px solid rgba(255, 60, 70, 0.25);
+  font: 600 12px/1 "Oswald", sans-serif; letter-spacing: 0.22em; text-transform: uppercase; color: #ffd9dc;
+  white-space: nowrap;
+}
+
+.hud-song {
+  top: 18px; left: 18px; display: flex; align-items: center; gap: 9px;
+  padding: 7px 12px; border-radius: 999px;
+  background: rgba(10, 8, 12, 0.72); border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 12px; color: #d8d4dc;
+}
+.hud-song .eq { display: flex; align-items: flex-end; gap: 2px; height: 12px; }
+.hud-song .eq i { width: 3px; background: #ff2d55; animation: eq 0.9s ease-in-out infinite; }
+.hud-song .eq i:nth-child(2) { animation-delay: 0.2s; }
+.hud-song .eq i:nth-child(3) { animation-delay: 0.45s; }
+@keyframes eq { 0%, 100% { height: 3px; } 50% { height: 12px; } }
+
+.hud-ammo {
+  left: 22px; bottom: 22px; display: flex; align-items: flex-end; gap: 12px;
+  padding: 10px 14px; border-radius: 6px;
+  background: rgba(8, 6, 8, 0.7); border: 1px solid rgba(255, 255, 255, 0.07);
+}
+.hud-ammo .rounds { display: flex; gap: 4px; }
+.hud-ammo i {
+  width: 7px; height: 24px; border-radius: 4px 4px 1px 1px;
+  background: linear-gradient(180deg, #e8c26a 0 32%, #8a6420 33%, #d9a441 60%, #9a6f25 100%);
+  box-shadow: 0 0 6px rgba(255, 190, 80, 0.35);
+  transition: opacity 0.2s, transform 0.2s, filter 0.2s;
+}
+.hud-ammo i.spent { opacity: 0.18; filter: grayscale(1); box-shadow: none; transform: translateY(3px); }
+.hud-ammo .count { font: 600 20px/1 "Oswald", sans-serif; letter-spacing: 0.06em; color: #f4e2c0; min-width: 52px; }
+.hud-ammo.empty .count { color: #ff3b4e; animation: blink 0.6s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0.3; } }
+
+.hud-toast {
+  top: 30%; left: 50%; transform: translate(-50%, -50%) scale(0.9);
+  font: 600 clamp(26px, 5vw, 54px)/1 "Oswald", sans-serif; letter-spacing: 0.16em; text-transform: uppercase;
+  color: #fff; white-space: nowrap;
+  text-shadow: 0 0 12px #ff2d55, 0 0 34px rgba(255, 45, 85, 0.7), 0 4px 0 #5a0010;
+}
+.hud-toast.on { transform: translate(-50%, -50%) scale(1); animation: slam 0.35s cubic-bezier(.2, 1.6, .4, 1); }
+.hud-toast.big { font-size: clamp(34px, 8vw, 96px); }
+@keyframes slam { from { transform: translate(-50%, -50%) scale(1.6); opacity: 0; } }
+
+.hud-action { left: 50%; bottom: 14%; transform: translateX(-50%); opacity: 1 !important; }
+.hud-action .blood-btn {
+  opacity: 1; transform: none; pointer-events: auto; cursor: pointer;
+  padding: 14px 28px 15px; font-size: 14px;
+  animation: rise 0.5s ease-out;
+}
+body.armed .hud-action .blood-btn { cursor: none; }
+@keyframes rise { from { opacity: 0; transform: translateY(12px); } }
+
+/* explosion flash */
+.blast-flash {
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 70% 55%, rgba(255, 240, 200, 0.95), rgba(255, 120, 30, 0.55) 35%, rgba(120, 0, 0, 0.2) 70%, transparent);
+  mix-blend-mode: screen; animation: fade 0.9s ease-out forwards;
+}
+#stage.shake-huge { animation: shakeHuge 0.8s linear; }
+@keyframes shakeHuge {
+  0%, 100% { transform: none; }
+  8% { transform: scale(1.07) translate(-22px, 12px) rotate(-0.8deg); }
+  18% { transform: scale(1.07) translate(18px, -14px) rotate(0.7deg); }
+  30% { transform: scale(1.06) translate(-14px, -9px) rotate(-0.4deg); }
+  45% { transform: scale(1.05) translate(10px, 8px); }
+  62% { transform: scale(1.03) translate(-6px, 4px); }
+  80% { transform: scale(1.01) translate(3px, -2px); }
+}
+
+@media (max-width: 700px) {
+  .hud-objective { top: 58px; font-size: 10px; letter-spacing: 0.14em; }
+  .hud-ammo i { width: 5px; height: 18px; }
+}
+
+/* ---------- finale ---------- */
+[hidden] { display: none !important; }
+#finale { position: fixed; inset: 0; width: 100%; height: 100%; display: block; z-index: 30; background: #030204; }
+#finale-video {
+  position: fixed; inset: 0; width: 100%; height: 100%; object-fit: contain;
+  z-index: 31; opacity: 0; pointer-events: none; background: #000;
+  transform-origin: 50% 50%; will-change: transform, filter;
+}
+#finale-hint {
+  position: fixed; left: 50%; bottom: 34px; z-index: 32; transform: translate(-50%, 10px);
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  font: 600 11px/1 "Oswald", sans-serif; letter-spacing: 0.4em; text-transform: uppercase; color: rgba(255, 255, 255, 0.8);
+  opacity: 0; pointer-events: none; transition: opacity 0.6s ease, transform 0.6s ease;
+}
+#finale-hint.on { opacity: 1; transform: translate(-50%, 0); }
+#finale-hint .mouse { width: 22px; height: 34px; border: 1.5px solid rgba(255, 235, 238, 0.6); border-radius: 12px; position: relative; }
+#finale-hint .mouse i { position: absolute; left: 50%; top: 6px; width: 3px; height: 7px; margin-left: -1.5px; border-radius: 2px; background: #fff; box-shadow: 0 0 6px #fff; animation: wheel 1.6s ease-in-out infinite; }
+@keyframes wheel { 0% { transform: none; opacity: 1; } 70% { transform: translateY(10px); opacity: 0; } 100% { opacity: 0; } }
+
+/* ---------- story over the video ---------- */
+#story {
+  position: fixed; inset: 0; z-index: 33; pointer-events: none;
+  display: grid; place-items: center; padding: 0 clamp(16px, 6vw, 96px);
+  perspective: 900px;
+}
+#story::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; opacity: 0; transition: opacity 0.8s ease;
+  background: radial-gradient(ellipse 70% 45% at center, rgba(0, 0, 0, 0.42), rgba(0, 0, 0, 0) 100%);
+}
+#story.on::before { opacity: 1; }
+.story-line {
+  grid-area: 1 / 1; visibility: hidden; max-width: 1100px; text-align: center;
+  font: 600 clamp(30px, 6.2vw, 92px)/1.02 "Oswald", "Arial Narrow", sans-serif;
+  letter-spacing: 0.02em; text-transform: uppercase; color: #fff;
+  /* white glow, with a tight dark edge underneath so it reads over any frame of the video */
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.9), 0 2px 10px rgba(0, 0, 0, 0.6), 0 0 22px rgba(255, 255, 255, 0.55), 0 0 60px rgba(255, 255, 255, 0.25);
+}
+.story-line .word { display: inline-block; white-space: nowrap; }
+.story-line .ch { display: inline-block; opacity: 0; transform-origin: 50% 100%; will-change: transform, opacity, filter; }
+.story-line .hot { color: #fff; text-shadow: 0 0 2px rgba(0, 0, 0, 0.9), 0 2px 10px rgba(0, 0, 0, 0.6), 0 0 16px #fff, 0 0 38px rgba(255, 255, 255, 0.8), 0 0 90px rgba(200, 220, 255, 0.55); }
+.story-line .story-cta {
+  margin-top: clamp(22px, 4vh, 44px); padding: 16px 34px 17px; font-size: 15px;
+  opacity: 0; transform: translateY(14px); pointer-events: none;
+}
+.story-line .story-cta.in { opacity: 1; transform: none; pointer-events: auto; }
+/* white glass button on this page, no blood */
+.story-line .story-cta {
+  background: rgba(255, 255, 255, 0.08); color: #fff; letter-spacing: 0.3em;
+  border: 1px solid rgba(255, 255, 255, 0.55); border-radius: 999px;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 0 24px rgba(255, 255, 255, 0.25), inset 0 0 12px rgba(255, 255, 255, 0.08);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+}
+.story-line .story-cta:hover { background: #fff; color: #050507; box-shadow: 0 0 40px rgba(255, 255, 255, 0.6); text-shadow: none; }
+.story-line .story-cta .drips { display: none; }
+
+#story-count {
+  position: fixed; right: clamp(16px, 3vw, 36px); top: 50%; z-index: 33; transform: translateY(-50%) rotate(90deg);
+  font: 600 11px/1 "Oswald", sans-serif; letter-spacing: 0.35em; color: rgba(255, 235, 238, 0.55);
+  opacity: 0; transition: opacity 0.5s ease; pointer-events: none;
+}
+#story-count.on { opacity: 1; }

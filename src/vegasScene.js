@@ -285,14 +285,27 @@ export function createVegasScene(canvas) {
 
   function aim(x, y) { gun.setAim(...toNdc(x, y)); }
 
-  // fire at a screen point (client px); returns where the muzzle is and whether a tile was hit
+  // fire at a screen point (client px); returns where the muzzle is plus what was hit
   function shoot(x, y) {
     const now = performance.now();
     gun.fire(now);
     const muzzle = gun.muzzleScreen(window.innerWidth, window.innerHeight);
-    const hit = world.shoot(...toNdc(x, y), now);
-    return { hit, muzzle };
+    return { ...world.shoot(...toNdc(x, y), now), muzzle };
   }
 
-  return { ready, revealFrom, aim, shoot };
+  // grab the current frame as a 2D canvas (render + copy in the same task, before the buffer clears)
+  function snapshot() {
+    loop();
+    const c = document.createElement('canvas');
+    c.width = canvas.width; c.height = canvas.height;
+    c.getContext('2d').drawImage(canvas, 0, 0);
+    return c;
+  }
+
+  function stop() {
+    running = false;
+    renderer.setAnimationLoop(null);
+  }
+
+  return { ready, revealFrom, aim, shoot, setLevel: world.setLevel, snapshot, stop };
 }
