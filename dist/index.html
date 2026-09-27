@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shaan | Vegas After Dark</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Oswald:wght@500;600&display=swap" rel="stylesheet" />
+  <script type="module" crossorigin src="/assets/index-C6geackO.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-DwRv2_G3.css">
+</head>
+<body>
+  <div id="stage">
+    <canvas id="scene"></canvas>
+    <div id="fx"></div>
+  </div>
+  <div id="reticle" aria-hidden="true">
+    <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+      <circle cx="20" cy="20" r="9" />
+      <path d="M20 2 v8 M20 30 v8 M2 20 h8 M30 20 h8" />
+      <circle cx="20" cy="20" r="1.4" fill="currentColor" stroke="none" />
+    </svg>
+  </div>
+
+  <section id="intro">
+    <div class="stage">
+      <img class="host" src="/assets/host.png" alt="" />
+      <div class="side">
+        <div class="chat" id="chat"></div>
+        <button class="blood-btn" id="start" type="button">
+          <span class="label">Start the show</span>
+          <span class="drips" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>
