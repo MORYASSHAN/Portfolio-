@@ -35,6 +35,11 @@
     <div class="hud-ammo" id="hud-ammo"></div>
     <div class="hud-toast" id="hud-toast"></div>
     <div class="hud-action" id="hud-action"></div>
+    <!-- only on screens narrower than the street photo: where you are in it, and a handle to slide along it -->
+    <div class="hud-pan" id="hud-pan">
+      <span class="hud-pan-hint"><span aria-hidden="true">&larr;</span> Swipe to look around <span aria-hidden="true">&rarr;</span></span>
+      <span class="hud-pan-track" role="slider" aria-label="Look around the street" aria-valuemin="0" aria-valuemax="100" tabindex="-1"><i></i></span>
+    </div>
   </div>
 
   <!-- browsers keep sound locked until the first click, so the show waits for one -->

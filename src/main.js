@@ -17,6 +17,8 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const vegas = createVegasScene(document.getElementById('scene'));
 const hud = createHud();
 const shooter = createShooter(vegas, { onShot, onAmmo: (n) => hud.ammo(n, BULLETS) });
+vegas.onPan(hud.pan);                       // phones: the look-around bar tracks the view...
+hud.panDrag((f) => vegas.setPan(f - 0.5));  // ...and dragging it slides the view
 
 const skip = document.getElementById('skip');
 let level = 1, levelCleared = false, signDown = false, reloadOffered = false;
@@ -26,6 +28,9 @@ unlockAudio();
 if (import.meta.env.DEV && location.hash === '#finale') {
   history.replaceState(null, '', location.pathname);
   skipToFinale();
+} else if (import.meta.env.DEV && location.hash === '#level2') {
+  history.replaceState(null, '', location.pathname);
+  skipToLevelTwo();
 } else if (hasPage(location.hash.slice(1))) deepLink(location.hash.slice(1));
 else opening();
 
@@ -44,6 +49,19 @@ async function skipToFinale() {
   await vegas.revealFrom(window.innerWidth / 2, window.innerHeight / 2, 10);
   await wait(300);
   finale({ x: window.innerWidth * 0.7, y: window.innerHeight * 0.45 });
+}
+
+// dev shortcut: localhost:5173/#level2 starts on the Vegas-sign level with a full clip
+async function skipToLevelTwo() {
+  hideHost();
+  showMusicButton(false);
+  await vegas.revealFrom(window.innerWidth / 2, window.innerHeight / 2, 10);
+  level = 2;
+  vegas.setLevel(2);
+  preloadFinale();
+  shooter.setAmmo(BULLETS);
+  shooter.arm();
+  hud.objective('Destroy the Vegas board to evacuate');
 }
 
 // returning visitors can jump straight to the landing page from the opening

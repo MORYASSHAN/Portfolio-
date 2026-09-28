@@ -55,13 +55,32 @@ export function createShooter(vegas, { onShot, onAmmo } = {}) {
     vegas.aim(e.clientX, e.clientY);
   }
 
-  window.addEventListener('pointermove', track);
+  // Mouse: click to shoot. Touch: a tap shoots, a sideways drag looks around the street instead
+  // (on a phone the photo is much wider than the screen), so a swipe never wastes a bullet.
+  const DRAG = 12;   // px a finger can wobble and still count as a tap
+  let touch = null;
+  window.addEventListener('pointermove', (e) => {
+    track(e);
+    if (!touch || e.pointerId !== touch.id) return;
+    if (!touch.dragged && Math.hypot(e.clientX - touch.x0, e.clientY - touch.y0) > DRAG) touch.dragged = true;
+    if (touch.dragged) vegas.panBy(e.clientX - touch.x);
+    touch.x = e.clientX;
+  });
   window.addEventListener('pointerdown', (e) => {
     if (!armed || (e.button !== undefined && e.button !== 0)) return;
-    if (e.target.closest && e.target.closest('button')) return;   // HUD buttons aren't targets
+    if (e.target.closest && e.target.closest('button, .hud-pan')) return;   // HUD controls aren't targets
     track(e);
-    fire(e.clientX, e.clientY);
+    if (e.pointerType !== 'touch') { fire(e.clientX, e.clientY); return; }
+    if (!touch) touch = { id: e.pointerId, x0: e.clientX, y0: e.clientY, x: e.clientX, dragged: false };
   });
+  const endTouch = (e, cancelled) => {
+    if (!touch || e.pointerId !== touch.id) return;
+    const t = touch;
+    touch = null;
+    if (!cancelled && !t.dragged && armed) fire(t.x0, t.y0);
+  };
+  window.addEventListener('pointerup', (e) => endTouch(e, false));
+  window.addEventListener('pointercancel', (e) => endTouch(e, true));
 
   function arm() {
     armed = true;

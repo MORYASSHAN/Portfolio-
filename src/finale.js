@@ -25,6 +25,7 @@ const smooth = (a, b, x) => { const t = clamp01((x - a) / (b - a)); return t * t
 
 export function preloadFinale() {
   if (video.src) return;
+  video.preload = 'auto';   // the tag says "none" so nothing loads early; from level 2 on, buffer it for real
   video.src = '/video/rb22.mp4';
   video.load();
 }

@@ -4,7 +4,7 @@ Hi shaan here i am making my ultimate design portfolio
 
 ```bash
 npm install
-npm run dev       # http://localhost:5173  (add #finale to jump to the ending)
+npm run dev       # http://localhost:5173  (add #level2 or #finale to jump ahead; dev only)
 npm run build     # production build into dist/
 npm run preview   # serve the production build at http://localhost:4173
 ```

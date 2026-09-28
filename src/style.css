@@ -315,6 +315,31 @@ body.armed .hud-action .blood-btn { cursor: none; }
   .hud-ammo i { width: 5px; height: 18px; }
 }
 
+/* look-around bar (phones, and any window narrower than the street photo) */
+#stage { touch-action: none; }   /* sideways swipes belong to the game, not the browser */
+.hud-pan {
+  left: 50%; bottom: 76px; transform: translateX(-50%); width: min(48vw, 240px);
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.hud-pan.on { pointer-events: auto; }
+.hud-pan-hint {
+  font: 600 10px/1 "Oswald", sans-serif; letter-spacing: 0.22em; text-transform: uppercase; white-space: nowrap;
+  color: rgba(255, 255, 255, 0.8); text-shadow: 0 1px 6px #000, 0 0 2px #000; transition: opacity 0.6s ease;
+  animation: nudge 1.6s ease-in-out 3;
+}
+.hud-pan.used .hud-pan-hint { opacity: 0; }
+@keyframes nudge { 0%, 100% { transform: none; } 30% { transform: translateX(-6px); } 70% { transform: translateX(6px); } }
+.hud-pan-track { position: relative; width: 100%; height: 24px; cursor: pointer; touch-action: none; }   /* tall, easy to grab */
+.hud-pan-track::before {
+  content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 4px; margin-top: -2px; border-radius: 2px;
+  background: rgba(255, 255, 255, 0.2); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+.hud-pan-track i {
+  position: absolute; top: 50%; height: 6px; margin-top: -3px; border-radius: 3px;
+  background: #fff; box-shadow: 0 0 10px rgba(255, 255, 255, 0.55);
+}
+body.armed .hud-pan-track { cursor: grab; }
+
 /* ---------- finale ---------- */
 [hidden] { display: none !important; }
 #finale { position: fixed; inset: 0; width: 100%; height: 100%; display: block; z-index: 30; background: #030204; }

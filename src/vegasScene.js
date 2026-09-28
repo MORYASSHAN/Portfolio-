@@ -14,7 +14,7 @@ const fragmentShader = /* glsl */ `
   precision highp float;
   uniform sampler2D uTex, uOverlay;
   uniform vec2 uRes, uImg, uMouse, uOrigin;
-  uniform float uTime, uReveal;
+  uniform float uTime, uReveal, uPan;
   varying vec2 vUv;
 
   float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -86,6 +86,7 @@ const fragmentShader = /* glsl */ `
 
     vec2 sc = sa > ia ? vec2(1.0, ia / sa) : vec2(sa / ia, 1.0);
     vec2 uv = (suv - 0.5) * sc * 0.95 + 0.5;
+    uv.x += uPan;
     vec2 p = vec2(uv.x, 1.0 - uv.y);
     vec2 base = p;
 
@@ -181,6 +182,7 @@ export function createVegasScene(canvas) {
     uMouse: { value: new THREE.Vector2() },
     uOrigin: { value: new THREE.Vector2(0.5, 0.5) },
     uReveal: { value: 0 },
+    uPan: { value: 0 },      // sideways shift of the photo crop, in photo widths (narrow screens: swipe / level 2)
   };
   scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({ uniforms, vertexShader, fragmentShader })));
 
@@ -196,11 +198,35 @@ export function createVegasScene(canvas) {
     const w = window.innerWidth, h = window.innerHeight;
     const sa = w / h, ia = uniforms.uImg.value.x / uniforms.uImg.value.y;
     const sx = (sa > ia ? 1 : sa / ia) * 0.95, sy = (sa > ia ? ia / sa : 1) * 0.95;
+    viewW = sx;
+    panMax = Math.max(0, 0.5 - sx / 2);
+    panTarget = autoPan ? signPan() : clampPan(panTarget);
+    pan = clampPan(pan);
+    uniforms.uPan.value = pan;
     const fov = THREE.MathUtils.radToDeg(2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(IMG_FOV / 2)) * sy));
-    const hx = ((VP[0] - 0.5) / sx) * 2, hy = ((1 - VP[1] - 0.5) / sy) * 2;
+    const hx = ((VP[0] - 0.5 - pan) / sx) * 2, hy = ((1 - VP[1] - 0.5) / sy) * 2;
     world.setView(w, h, fov, hx, hy);
     gun.setAspect(sa);
+    // the photo is always cropped ~5% for breathing room; only offer the bar when a real chunk is hidden
+    panListener?.({ visible: panMax > 0.08, width: viewW, left: 0.5 + pan - viewW / 2, used: userPanned });
   }
+
+  // On a tall phone only the middle strip of the wide photo fits. Swiping slides that strip along
+  // the photo (panBy / setPan), and in level 2 it glides over to the Welcome sign on its own.
+  // pan is in photo widths; 0 is the original centred framing that desktops always get.
+  const SIGN_U = 0.84;     // the sign's centre, as a fraction of the photo's width
+  let pan = 0, panTarget = 0, panMax = 0, viewW = 0.95, panEase = 0.045;
+  let autoPan = false, userPanned = false, panListener = null;
+  const clampPan = (p) => Math.min(panMax, Math.max(-panMax, p));
+  function signPan() {
+    if (SIGN_U + 0.08 <= 0.5 + viewW / 2) return 0;   // already in view: leave the framing alone
+    return clampPan(SIGN_U - 0.5);
+  }
+  function setLevel(n) { world.setLevel(n); autoPan = n === 2; panEase = 0.045; syncView(); }
+  // dx: how far a finger moved, in px. Dragging right reveals more of the left side, like a map.
+  function panBy(dx) { autoPan = false; userPanned = true; panEase = 0.5; panTarget = clampPan(panTarget - (dx / window.innerWidth) * viewW); }
+  function setPan(p) { autoPan = false; userPanned = true; panEase = 0.3; panTarget = clampPan(p); }
+  function onPan(fn) { panListener = fn; syncView(); }
 
   function resize() {
     const w = window.innerWidth, h = window.innerHeight;
@@ -243,6 +269,11 @@ export function createVegasScene(canvas) {
       const p = Math.min((performance.now() - reveal.start) / reveal.duration, 1);
       uniforms.uReveal.value = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
       if (p >= 1) { reveal.done(); reveal = null; world.powerOn(performance.now()); }
+    }
+
+    if (Math.abs(panTarget - pan) > 1e-4) {
+      pan += (panTarget - pan) * panEase;
+      syncView();   // the 3D camera shifts with the photo, so the sign, the crowd and every shot stay lined up
     }
 
     const now = performance.now();
@@ -307,5 +338,5 @@ export function createVegasScene(canvas) {
     renderer.setAnimationLoop(null);
   }
 
-  return { ready, revealFrom, aim, shoot, setLevel: world.setLevel, snapshot, stop };
+  return { ready, revealFrom, aim, shoot, setLevel, panBy, setPan, onPan, snapshot, stop };
 }
