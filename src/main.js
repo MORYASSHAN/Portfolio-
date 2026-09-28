@@ -97,23 +97,24 @@ function enterGate() {
     ready = true;
     gate.classList.remove('loading', 'booting');
     gate.style.setProperty('--p', 1);
-    barText.textContent = 'LOADED';
+    barText.textContent = 'CLICK TO START';
     gate.setAttribute('aria-label', 'Loaded. Click to start');
-    setTimeout(() => { barText.textContent = 'CLICK TO START'; }, 900);   // then say plainly what to do
   };
-  // the number glides toward the real progress, so it reads 0, 1, 2 ... 100 instead of jumping
+  // the number glides toward the real progress (0, 1, 2 ... instead of jumping), but never shows 100%
+  // until everything has truly finished; the instant it has, the bar says CLICK TO START
   (function tick() {
     if (ready) return;
-    if (shown < target) shown = Math.min(target, shown + Math.max(0.004, (target - shown) * 0.12));
+    if (loaded) { done(); return; }
+    const cap = Math.min(target, 0.99);
+    if (shown < cap) shown = Math.min(cap, shown + Math.max(0.004, (cap - shown) * 0.12));
     gate.style.setProperty('--p', shown);
     barText.textContent = `LOADING ${Math.floor(shown * 100)}%`;
-    if (loaded && shown >= 1) { done(); return; }
     requestAnimationFrame(tick);
   })();
   loadAll(
     [(on) => preloadFinale(on), ...SHOW_IMAGES.map((src) => (on) => fetchWithProgress(src, on))],
     (p) => { target = p; gate.classList.remove('booting'); },
-  ).then(() => { target = 1; loaded = true; });
+  ).then(() => { target = 1; loaded = true; done(); });   // don't wait for the next frame
 
   // the click on LOADED is what lets the browser play sound, so the show waits for it
   return new Promise((resolve) => {
