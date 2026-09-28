@@ -10,8 +10,10 @@ import { preloadFinale, startFinale } from './finale.js';
 import { startMusic, stopMusic } from './music.js';
 import { SONGS, playSong } from './songs.js';
 import { showMusicButton } from './musicButton.js';
+import { fetchWithProgress, loadAll } from './preload.js';
 
 const BULLETS = 10;
+const SHOW_IMAGES = ['/assets/vegas.webp', '/assets/billboard.webp', '/assets/host.png', '/assets/shaan.webp'];
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const vegas = createVegasScene(document.getElementById('scene'));
@@ -35,7 +37,11 @@ if (import.meta.env.DEV && location.hash === '#finale') {
 else opening();
 
 // a shared link like /#projects skips the show and lands on that page, with the portrait behind it
+// the loading gate is in the HTML from the first paint; paths that skip the show remove it
+function hideGate() { document.getElementById('enter').hidden = true; }
+
 async function deepLink(name) {
+  hideGate();
   showMusicButton(false);
   hideHost();
   await openHome();
@@ -43,6 +49,7 @@ async function deepLink(name) {
 }
 
 async function skipToFinale() {
+  hideGate();
   hideHost();
   showMusicButton(false);
   preloadFinale();
@@ -53,6 +60,7 @@ async function skipToFinale() {
 
 // dev shortcut: localhost:5173/#level2 starts on the Vegas-sign level with a full clip
 async function skipToLevelTwo() {
+  hideGate();
   hideHost();
   showMusicButton(false);
   await vegas.revealFrom(window.innerWidth / 2, window.innerHeight / 2, 10);
@@ -76,16 +84,46 @@ skip.addEventListener('click', async () => {
 }, { once: true });
 
 // one click (or Enter/Space) before the host starts typing, so his key clicks are audible
+// The gate doubles as the loading screen: one white bar fills while the finale video and the show's
+// images (SHOW_IMAGES, up top) download, then reads LOADED.
 function enterGate() {
-  const gate = document.getElementById('enter');
+  const gate = document.getElementById('enter'), barText = gate.querySelector('.boot-text');
+  let ready = false, target = 0, shown = 0, loaded = false;
   gate.hidden = false;
+  gate.classList.add('loading');
   gate.focus();
+
+  const done = () => {
+    ready = true;
+    gate.classList.remove('loading', 'booting');
+    gate.style.setProperty('--p', 1);
+    barText.textContent = 'LOADED';
+    gate.setAttribute('aria-label', 'Loaded. Click to start');
+    setTimeout(() => { barText.textContent = 'CLICK TO START'; }, 900);   // then say plainly what to do
+  };
+  // the number glides toward the real progress, so it reads 0, 1, 2 ... 100 instead of jumping
+  (function tick() {
+    if (ready) return;
+    if (shown < target) shown = Math.min(target, shown + Math.max(0.004, (target - shown) * 0.12));
+    gate.style.setProperty('--p', shown);
+    barText.textContent = `LOADING ${Math.floor(shown * 100)}%`;
+    if (loaded && shown >= 1) { done(); return; }
+    requestAnimationFrame(tick);
+  })();
+  loadAll(
+    [(on) => preloadFinale(on), ...SHOW_IMAGES.map((src) => (on) => fetchWithProgress(src, on))],
+    (p) => { target = p; gate.classList.remove('booting'); },
+  ).then(() => { target = 1; loaded = true; });
+
+  // the click on LOADED is what lets the browser play sound, so the show waits for it
   return new Promise((resolve) => {
-    gate.addEventListener('click', () => {
+    gate.addEventListener('click', function go() {
+      if (!ready) return;
+      gate.removeEventListener('click', go);
       unlockAudio();
       gate.classList.add('gone');
       setTimeout(() => { gate.hidden = true; resolve(); }, 450);
-    }, { once: true });
+    });
   });
 }
 
@@ -100,6 +138,7 @@ async function opening() {
   ]);
   const { el } = await choose([{ label: 'Start the show' }]);
   skip.classList.add('gone');
+  preloadFinale();   // start pulling the finale video into memory now, a minute or more before it's needed
   boom();
   startMusic();
   showMusicButton(true);

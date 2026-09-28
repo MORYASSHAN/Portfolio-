@@ -43,10 +43,11 @@
   </div>
 
   <!-- browsers keep sound locked until the first click, so the show waits for one -->
-  <button type="button" id="enter" hidden>
-    <span class="enter-ring" aria-hidden="true"></span>
-    <span class="enter-label">Click to enter</span>
-    <span class="enter-hint">Turn your sound on for the full show</span>
+  <!-- visible from the very first paint (no JS needed), so a slow connection never shows a blank screen -->
+  <button type="button" id="enter" class="loading booting" aria-label="Loading">
+    <span class="boot">
+      <span class="boot-bar"><span class="boot-fill"></span><span class="boot-text">LOADING 0%</span></span>
+    </span>
   </button>
 
   <section id="intro">

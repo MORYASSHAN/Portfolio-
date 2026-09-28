@@ -454,18 +454,26 @@ body.armed #music-btn { cursor: none; }
 #enter[hidden] { display: none; }
 #enter.gone { opacity: 0; pointer-events: none; }
 #enter:focus-visible { outline: none; }
-.enter-ring {
-  position: relative; width: 64px; height: 64px; border-radius: 50%; margin-bottom: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.5); transition: transform 0.4s ease, border-color 0.4s;
+/* loader: a single white bar that fills with progress, then reads LOADED and becomes the button */
+#enter { --mono: ui-monospace, "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace; }
+.boot { width: min(400px, 86vw); }
+.boot-bar {
+  position: relative; display: grid; place-items: center; height: 66px; border-radius: 12px; overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.28); background: #000; transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-.enter-ring::before { content: ""; position: absolute; inset: 24px; border-radius: 50%; background: #fff; }
-.enter-ring::after {
-  content: ""; position: absolute; inset: -1px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.4);
-  animation: ring 2.2s ease-out infinite;
+.boot-fill { position: absolute; inset: 0; width: calc(var(--p, 0) * 100%); background: #fff; }
+/* difference blend: the letters read black over the white fill and white over the empty part */
+.boot-text {
+  position: relative; font: 700 17px/1 var(--mono); letter-spacing: 0.34em; padding-left: 0.34em;
+  color: #fff; mix-blend-mode: difference; font-variant-numeric: tabular-nums;
 }
-#enter:hover .enter-ring, #enter:focus-visible .enter-ring { transform: scale(1.08); border-color: #fff; }
-.enter-label { font: 600 clamp(20px, 2.4vw, 28px)/1 "Oswald", sans-serif; letter-spacing: 0.24em; text-transform: uppercase; }
-.enter-hint { font-size: 13px; letter-spacing: 0.04em; color: rgba(255, 255, 255, 0.5); }
+/* before the first byte arrives: a sliver sweeping across, so it never looks stuck */
+#enter.booting .boot-fill { width: 22%; animation: sweep 1.2s ease-in-out infinite alternate; }
+@keyframes sweep { from { transform: translateX(-100%); } to { transform: translateX(455%); } }
+#enter:not(.loading) .boot-bar { border-color: #fff; box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.35); animation: ready 2s ease-out infinite; }
+#enter:not(.loading):hover .boot-bar, #enter:not(.loading):focus-visible .boot-bar { transform: scale(1.02); }
+@keyframes ready { 0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.35); } 100% { box-shadow: 0 0 0 14px rgba(255, 255, 255, 0); } }
+#enter.loading { cursor: progress; }
 
 /* ---------- landing page ---------- */
 #home {

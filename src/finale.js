@@ -10,6 +10,7 @@ import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import fontData from 'three/examples/fonts/helvetiker_bold.typeface.json';
 import { glassBreak, switchOn } from './sound.js';
 import { createStory, STORY_LEN } from './story.js';
+import { fetchWithProgress } from './preload.js';
 
 // After the sign goes: the whole screen breaks like glass and falls away, revealing a dark stage
 // with FROM SHAAN standing on a mirror floor. Scrolling drives the camera until the whole video is on screen,
@@ -23,11 +24,30 @@ const FOV = 42;
 const clamp01 = (x) => Math.min(1, Math.max(0, x));
 const smooth = (a, b, x) => { const t = clamp01((x - a) / (b - a)); return t * t * (3 - 2 * t); };
 
-export function preloadFinale() {
+// The whole video is downloaded into memory while the show runs, so the finale plays and loops it
+// without ever stopping to buffer (streaming a 17 MB 1080p file stutters on slower connections).
+const VIDEO_SRC = '/video/rb22.mp4';
+let fetching = null;
+// onBytes(received, total) feeds the loading ring; returns a promise that settles when it's in memory
+export function preloadFinale(onBytes) {
+  if (fetching) return fetching;
+  fetching = fetchWithProgress(VIDEO_SRC, onBytes)
+    .then((blob) => {
+      const t = video.currentTime, wasPlaying = video.src && !video.paused;
+      video.src = URL.createObjectURL(blob);
+      if (wasPlaying) {   // the finale already started on the streamed copy: carry on from the same frame
+        video.addEventListener('loadedmetadata', () => { video.currentTime = t; video.play().catch(() => {}); }, { once: true });
+      }
+    })
+    .catch(() => {});      // network trouble: the finale just streams it instead (useVideo)
+  return fetching;
+}
+
+// called when the finale needs the video: if the download hasn't finished yet, stream it meanwhile
+function useVideo() {
   if (video.src) return;
-  video.preload = 'auto';   // the tag says "none" so nothing loads early; from level 2 on, buffer it for real
-  video.src = '/video/rb22.mp4';
-  video.load();
+  video.preload = 'auto';
+  video.src = VIDEO_SRC;
 }
 
 function glowTexture() {
@@ -310,7 +330,7 @@ export function startFinale(snap, ix, iy, onCta) {
 
     if (!fell && e > 0.75) { fell = true; glassBreak(); glassBreak(); }
     if (!scrollOn && e > LIGHTS_AT + 2.2) { scrollOn = true; hint.classList.add('on'); }
-    if (!videoStarted && e > 1) { videoStarted = true; video.muted = true; video.play().catch(() => {}); }
+    if (!videoStarted && e > 1) { videoStarted = true; useVideo(); video.muted = true; video.play().catch(() => {}); }
 
     prog += (target - prog) * (1 - Math.exp(-dt * 4.5));
     const p = Math.min(prog, 1), u = prog - 1;
