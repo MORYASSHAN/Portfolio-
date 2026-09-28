@@ -420,6 +420,28 @@ body.armed #music-btn { cursor: none; }
 }
 @keyframes ring { from { transform: scale(1); opacity: 0.8; } to { transform: scale(1.5); opacity: 0; } }
 
+/* ---------- click-to-enter gate (unlocks sound before the host types) ---------- */
+#enter {
+  position: fixed; inset: 0; z-index: 60; width: 100%; border: 0; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+  background: #000; color: #fff; font: inherit; transition: opacity 0.45s ease;
+}
+#enter[hidden] { display: none; }
+#enter.gone { opacity: 0; pointer-events: none; }
+#enter:focus-visible { outline: none; }
+.enter-ring {
+  position: relative; width: 64px; height: 64px; border-radius: 50%; margin-bottom: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.5); transition: transform 0.4s ease, border-color 0.4s;
+}
+.enter-ring::before { content: ""; position: absolute; inset: 24px; border-radius: 50%; background: #fff; }
+.enter-ring::after {
+  content: ""; position: absolute; inset: -1px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.4);
+  animation: ring 2.2s ease-out infinite;
+}
+#enter:hover .enter-ring, #enter:focus-visible .enter-ring { transform: scale(1.08); border-color: #fff; }
+.enter-label { font: 600 clamp(20px, 2.4vw, 28px)/1 "Oswald", sans-serif; letter-spacing: 0.24em; text-transform: uppercase; }
+.enter-hint { font-size: 13px; letter-spacing: 0.04em; color: rgba(255, 255, 255, 0.5); }
+
 /* ---------- landing page ---------- */
 #home {
   position: fixed; inset: 0; z-index: 40; overflow: hidden;

@@ -57,7 +57,22 @@ skip.addEventListener('click', async () => {
   skip.hidden = true;
 }, { once: true });
 
+// one click (or Enter/Space) before the host starts typing, so his key clicks are audible
+function enterGate() {
+  const gate = document.getElementById('enter');
+  gate.hidden = false;
+  gate.focus();
+  return new Promise((resolve) => {
+    gate.addEventListener('click', () => {
+      unlockAudio();
+      gate.classList.add('gone');
+      setTimeout(() => { gate.hidden = true; resolve(); }, 450);
+    }, { once: true });
+  });
+}
+
 async function opening() {
+  await enterGate();
   skip.hidden = false;
   await openHost();
   await say([
