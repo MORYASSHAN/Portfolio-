@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { createTargetOutline } from './targetOutline.js';
 
 // "Welcome to Fabulous Las Vegas" roadside sign — the level 2 target.
 // Local units are meters; the root sits on the ground, the board faces +z.
@@ -183,6 +184,11 @@ export function createVegasSign(scene, glowTex) {
   board.add(bulbs);
   const bulbAlive = bulbPos.map(() => true);
 
+  // level 2's "shoot this" frame, loose enough to take in the WELCOME discs on top
+  const mark = createTargetOutline(OUTLINE, { sx: 1.1, sy: 1.34, width: 0.22 });
+  mark.group.position.z = 0.09;
+  board.add(mark.group);
+
   // text redraws once the page font is in
   if (document.fonts) document.fonts.load('600 64px "Oswald"').then(() => {
     drawBoard(boardCanvas); boardTex.needsUpdate = true;
@@ -325,7 +331,8 @@ export function createVegasSign(scene, glowTex) {
   // a stray shot in level 1: sparks only
   function ping(point) { sparks(point, 18, 0.7); }
 
-  function update(t, dt, power) {
+  function update(t, dt, power, marking = 0) {
+    mark.update(t, destroyed ? 0 : marking);
     const lit = 0.07 + 0.93 * power;
     const shaky = damage >= 3 && !destroyed && Math.random() < 0.1 ? 0.35 : 1;
     const bright = destroyed ? lit * 0.4 : lit * shaky;

@@ -82,14 +82,17 @@ export function createShooter(vegas, { onShot, onAmmo } = {}) {
   window.addEventListener('pointerup', (e) => endTouch(e, false));
   window.addEventListener('pointercancel', (e) => endTouch(e, true));
 
+  // the targets blink only while the gun is out, so the outline always means "shoot this now"
   function arm() {
     armed = true;
     document.body.classList.add('armed');
+    vegas.setMarking(true);
   }
 
   function disarm() {
     armed = false;
     document.body.classList.remove('armed');
+    vegas.setMarking(false);
   }
 
   function setAmmo(n) { ammo = n; onAmmo?.(n); }

@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { createVegasSign } from './vegasSign.js';
+import { createTargetOutline } from './targetOutline.js';
 
 // The background photo is composited raw (no color conversion), so the 3D layer works in the
 // same display space: no linear conversion of colors/textures, output straight to the target.
@@ -152,8 +153,9 @@ function buildBillboard(photo, glowTex) {
   bb.add(frame);
 
   // 9 photo tiles, slightly cracked out of line
-  const tiles = [], panels = [];
+  const tiles = [], panels = [], marks = [];
   const t = BB_SIZE / 3, gap = 0.09, inset = 0.004;
+  const hs = (t - gap) / 2, square = [[-hs, -hs], [hs, -hs], [hs, hs], [-hs, hs]];
   for (let r = 0; r < 3; r++) {
     for (let c = 0; c < 3; c++) {
       const geo = new THREE.PlaneGeometry(t - gap, t - gap);
@@ -166,8 +168,12 @@ function buildBillboard(photo, glowTex) {
       const tile = new THREE.Mesh(geo, mat);
       const backing = new THREE.Mesh(new THREE.BoxGeometry(t - gap, t - gap, 0.1), dark);
       backing.position.z = -0.06;
+      // blinking frame just inside the tile's edge: "shoot this one". It leaves with the tile.
+      const mark = createTargetOutline(square, { sx: 1 - 0.26 / hs, sy: 1 - 0.26 / hs, width: 0.18 });
+      mark.group.position.z = 0.03;
+      marks.push(mark);
       const holder = new THREE.Group();
-      holder.add(backing, tile);
+      holder.add(backing, tile, mark.group);
       holder.position.set((c - 1) * t, cy + (1 - r) * t, 0.02 + (Math.random() - 0.5) * 0.08);
       holder.rotation.set((Math.random() - 0.5) * 0.035, (Math.random() - 0.5) * 0.035, (Math.random() - 0.5) * 0.02);
       holder.userData = { index: r * 3 + c };
@@ -249,7 +255,7 @@ function buildBillboard(photo, glowTex) {
     lamps.push({ bulb, cone });
   });
 
-  return { group: bb, tiles, panels, neonMat, halo, lamps };
+  return { group: bb, tiles, panels, marks, neonMat, halo, lamps };
 }
 
 function makePerson(rng) {
@@ -533,6 +539,10 @@ export function createBillboardWorld() {
 
   function setLevel(n) { level = n; }
 
+  // blinking outlines on whatever the current level wants shot (on while the gun is out)
+  let marking = false, markAmt = 0;
+  function setMarking(on) { marking = on; }
+
   // ---- power-on state
   let power = 0, powerStart = -1;
 
@@ -596,7 +606,9 @@ export function createBillboardWorld() {
     }
     updateRunners(t, dt);
     updateShards(dt);
-    sign.update(t, dt, power);
+    markAmt += ((marking ? 1 : 0) - markAmt) * Math.min(1, dt * 5);
+    board.marks.forEach((m) => m.update(t, level === 1 ? markAmt * power : 0));
+    sign.update(t, dt, power, level === 2 ? markAmt : 0);
 
     // gossip bubbles
     if (gossipOn) {
@@ -639,6 +651,6 @@ export function createBillboardWorld() {
     bubbles.forEach((b) => { b.next = nowMs + 900 + Math.random() * 3000; });
   }
 
-  return { scene, camera, setView, update, powerOn, shoot, setLevel };
+  return { scene, camera, setView, update, powerOn, shoot, setLevel, setMarking };
 }
 

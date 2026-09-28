@@ -315,6 +315,7 @@ export function createVegasScene(canvas) {
   const toNdc = (x, y) => [(x / window.innerWidth) * 2 - 1, -(y / window.innerHeight) * 2 + 1];
 
   function aim(x, y) { gun.setAim(...toNdc(x, y)); }
+  const setMarking = (on) => world.setMarking(on);
 
   // fire at a screen point (client px); returns where the muzzle is plus what was hit
   function shoot(x, y) {
@@ -338,5 +339,5 @@ export function createVegasScene(canvas) {
     renderer.setAnimationLoop(null);
   }
 
-  return { ready, revealFrom, aim, shoot, setLevel, panBy, setPan, onPan, snapshot, stop };
+  return { ready, revealFrom, aim, shoot, setLevel, setMarking, panBy, setPan, onPan, snapshot, stop };
 }
