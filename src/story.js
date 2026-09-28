@@ -55,7 +55,7 @@ export function createStory(onCta) {
     if (line.cta) {
       btn = bloodButton(line.cta);
       btn.classList.add('story-cta');
-      btn.addEventListener('click', () => onCta?.());
+      btn.addEventListener('click', () => onCta?.(btn), { once: true });
       el.appendChild(document.createElement('br'));
       el.appendChild(btn);
     }

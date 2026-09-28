@@ -21,3 +21,12 @@ export function playSong(song, volume = 0.75) {
   }, 50);
   current = el;
 }
+
+export const songLoaded = () => !!current;
+
+// the music button pauses/resumes whatever song is on
+export function pauseSong(paused) {
+  if (!current) return;
+  if (paused) current.pause();
+  else current.play().catch(() => {});
+}

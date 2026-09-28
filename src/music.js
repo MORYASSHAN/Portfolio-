@@ -28,8 +28,8 @@ const CLAP = [4, 12];
 
 const hz = (m) => 440 * Math.pow(2, (m - 69) / 12);
 
-let started = false;
-let master = null, timer = null;
+let started = false, stopped = false;
+let master = null, mute = null, timer = null;
 
 export function startMusic() {
   if (started) return;
@@ -42,7 +42,8 @@ export function startMusic() {
   master.gain.linearRampToValueAtTime(0.32, a.currentTime + 3);
   const comp = a.createDynamicsCompressor();
   comp.threshold.value = -18; comp.ratio.value = 4;
-  master.connect(comp).connect(a.destination);
+  mute = a.createGain();                 // the music button's on/off, separate from the fades
+  master.connect(comp).connect(mute).connect(a.destination);
 
   const noiseBuf = a.createBuffer(1, a.sampleRate * 0.5, a.sampleRate);
   const nd = noiseBuf.getChannelData(0);
@@ -147,9 +148,21 @@ export function startMusic() {
 // fade the beat out (when a real song takes over)
 export function stopMusic(fade = 1.2) {
   if (!master) return;
+  stopped = true;
   const a = audio(), now = a.currentTime;
   master.gain.cancelScheduledValues(now);
   master.gain.setValueAtTime(master.gain.value, now);
   master.gain.linearRampToValueAtTime(0, now + fade);
   setTimeout(() => clearInterval(timer), fade * 1000 + 300);
+}
+
+export const beatPlaying = () => started && !stopped;
+
+// soft mute/unmute for the music button
+export function muteBeat(on) {
+  if (!mute) return;
+  const now = audio().currentTime;
+  mute.gain.cancelScheduledValues(now);
+  mute.gain.setValueAtTime(mute.gain.value, now);
+  mute.gain.linearRampToValueAtTime(on ? 0 : 1, now + 0.4);
 }

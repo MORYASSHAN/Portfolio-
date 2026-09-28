@@ -163,7 +163,7 @@ function buildLetters(scene) {
   return letters;
 }
 
-export function startFinale(snap, ix, iy) {
+export function startFinale(snap, ix, iy, onCta) {
   const canvas = document.getElementById('finale');
   const hint = document.getElementById('finale-hint');
   canvas.hidden = false;
@@ -300,7 +300,7 @@ export function startFinale(snap, ix, iy) {
   const LIGHTS_AT = 1.7;
   letters.forEach((l, i) => { l.onAt = LIGHTS_AT + (l.word ? 0.55 + (i - 4) * 0.17 : i * 0.07); l.clicked = false; });
   let fell = false, videoStarted = false, arrived = false, last = t0;
-  const story = createStory();
+  const story = createStory(onCta);
   const camPos = new THREE.Vector3(), camLook = new THREE.Vector3();
 
   function frame() {
@@ -380,4 +380,13 @@ export function startFinale(snap, ix, iy) {
   }
   renderer.setAnimationLoop(frame);
   frame();   // first frame goes up synchronously, so the Vegas canvas can be hidden right after
+
+  // once something covers the finale for good, stop rendering it and scrolling through it
+  function stop() {
+    renderer.setAnimationLoop(null);
+    scrollOn = false;
+    video.pause();
+    [canvas, video, hint, document.getElementById('story'), document.getElementById('story-count')].forEach((el) => { el.hidden = true; });
+  }
+  return { stop };
 }

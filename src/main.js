@@ -2,11 +2,14 @@ import './style.css';
 import { createVegasScene } from './vegasScene.js';
 import { createShooter } from './shooter.js';
 import { createHud } from './hud.js';
-import { openHost, say, choose, leaveHost, hideHost, closeHost } from './intro.js';
+import { openHost, say, choose, leaveHost, hideHost, closeHost, abortHost } from './intro.js';
+import { openHome } from './home.js';
+import { hasPage, showPage } from './pages.js';
 import { unlockAudio, boom, screenCrack } from './sound.js';
 import { preloadFinale, startFinale } from './finale.js';
 import { startMusic, stopMusic } from './music.js';
 import { SONGS, playSong } from './songs.js';
+import { showMusicButton } from './musicButton.js';
 
 const BULLETS = 10;
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -15,6 +18,7 @@ const vegas = createVegasScene(document.getElementById('scene'));
 const hud = createHud();
 const shooter = createShooter(vegas, { onShot, onAmmo: (n) => hud.ammo(n, BULLETS) });
 
+const skip = document.getElementById('skip');
 let level = 1, levelCleared = false, signDown = false, reloadOffered = false;
 
 unlockAudio();
@@ -22,17 +26,39 @@ unlockAudio();
 if (import.meta.env.DEV && location.hash === '#finale') {
   history.replaceState(null, '', location.pathname);
   skipToFinale();
-} else opening();
+} else if (hasPage(location.hash.slice(1))) deepLink(location.hash.slice(1));
+else opening();
+
+// a shared link like /#projects skips the show and lands on that page, with the portrait behind it
+async function deepLink(name) {
+  showMusicButton(false);
+  hideHost();
+  await openHome();
+  showPage(name, { push: false });
+}
 
 async function skipToFinale() {
   hideHost();
+  showMusicButton(false);
   preloadFinale();
   await vegas.revealFrom(window.innerWidth / 2, window.innerHeight / 2, 10);
   await wait(300);
   finale({ x: window.innerWidth * 0.7, y: window.innerHeight * 0.45 });
 }
 
+// returning visitors can jump straight to the landing page from the opening
+skip.addEventListener('click', async () => {
+  const r = skip.getBoundingClientRect();
+  skip.classList.add('gone');
+  abortHost();
+  showMusicButton(false);
+  await openHome(r.left + r.width / 2, r.top + r.height / 2);
+  hideHost();
+  skip.hidden = true;
+}, { once: true });
+
 async function opening() {
+  skip.hidden = false;
   await openHost();
   await say([
     'Hey pal.',
@@ -40,8 +66,10 @@ async function opening() {
     "There's a big billboard on the road with a cracked banner photo on it. Just shoot the blocks. Okay?",
   ]);
   const { el } = await choose([{ label: 'Start the show' }]);
+  skip.classList.add('gone');
   boom();
   startMusic();
+  showMusicButton(true);
   const r = el.getBoundingClientRect();
   leaveHost();
   // the Vegas scene (with the gun) bursts out of the button
@@ -87,6 +115,7 @@ async function levelTwo() {
   const { value: song } = await choose(SONGS.map((s) => ({ song: s, value: s })));
   stopMusic();
   playSong(song);
+  showMusicButton(true);
   hud.song(song);
   await wait(600);
   await say([
@@ -113,7 +142,12 @@ async function finale(res) {
   shooter.disarm();
   const snap = vegas.snapshot();
   screenCrack();
-  startFinale(snap, res.x, res.y);
+  // "Know more" at the end of the story opens the same landing page
+  const end = startFinale(snap, res.x, res.y, async (btn) => {
+    const r = btn.getBoundingClientRect();
+    await openHome(r.left + r.width / 2, r.top + r.height / 2);
+    end.stop();
+  });
   vegas.stop();
   document.getElementById('stage').hidden = true;
   document.getElementById('hud').hidden = true;

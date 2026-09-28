@@ -7,6 +7,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const intro = document.getElementById('intro');
 const chat = document.getElementById('chat');
 const actions = document.getElementById('actions');
+let aborted = false;
 
 function typingDots() {
   const el = document.createElement('div');
@@ -18,7 +19,7 @@ function typingDots() {
 
 async function typeMessage(text) {
   const dots = typingDots();
-  await wait(700 + Math.random() * 400);
+  await wait(350 + Math.random() * 200);
   dots.remove();
 
   const bubble = document.createElement('div');
@@ -29,11 +30,13 @@ async function typeMessage(text) {
   bubble.append(txt, caret);
   chat.appendChild(bubble);
 
+  let n = 0;
   for (const ch of text) {
+    if (aborted) return;
     txt.textContent += ch;
-    if (ch !== ' ') keyClick();
-    let delay = 32 + Math.random() * 38;
-    if (',.?!'.includes(ch)) delay += 220;
+    if (ch !== ' ' && n++ % 2 === 0) keyClick();   // every other key, so the faster typing doesn't turn into a buzz
+    let delay = 16 + Math.random() * 18;
+    if (',.?!'.includes(ch)) delay += 110;
     await wait(delay);
   }
   caret.remove();
@@ -73,8 +76,9 @@ export async function openHost({ overScene = false } = {}) {
 export async function say(lines) {
   intro.classList.remove('btn-in');
   for (const line of lines) {
+    if (aborted) return new Promise(() => {});
     await typeMessage(line);
-    await wait(450);
+    await wait(280);
   }
 }
 
@@ -103,6 +107,12 @@ export function leaveHost() { intro.classList.add('leaving'); }
 export function hideHost() {
   intro.hidden = true;
   intro.className = '';
+}
+
+// skip: stop typing for good, the pending say()/choose() just never finish
+export function abortHost() {
+  aborted = true;
+  leaveHost();
 }
 
 export async function closeHost() {

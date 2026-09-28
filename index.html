@@ -4,6 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shaan | Vegas After Dark</title>
+  <meta name="description" content="Shaan Goswami (Moryasshan): full stack developer, writer and storyteller. Builder of Acadex, VoiceForge, JuteIt and Meakly." />
+  <meta name="theme-color" content="#000000" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Shaan Goswami | Developer, writer & storyteller" />
+  <meta property="og:description" content="Shoot your way through Vegas, then meet the developer behind it: projects, writing, stories and more." />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@Shaanjson" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23000'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial Black,Arial,sans-serif' font-weight='900' font-size='38' fill='%23fff'%3ES%3C/text%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Oswald:wght@500;600&display=swap" rel="stylesheet" />
@@ -44,6 +52,60 @@
   <div id="story" aria-live="polite"></div>
   <div id="story-count" aria-hidden="true"></div>
   <div id="finale-hint" aria-hidden="true"><span class="mouse"><i></i></span><span>Scroll</span></div>
+
+  <button type="button" id="music-btn" hidden>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M9 17V5l10-2v12" />
+      <circle cx="6.5" cy="17" r="2.5" fill="currentColor" stroke="none" />
+      <circle cx="16.5" cy="15" r="2.5" fill="currentColor" stroke="none" />
+      <path class="slash" d="M3 3l18 18" />
+    </svg>
+  </button>
+
+  <button type="button" id="skip" hidden>Skip this part if you enjoyed the show earlier <span aria-hidden="true">&rarr;</span></button>
+
+  <!-- links marked data-todo are placeholders until the real ones come in -->
+  <main id="home" hidden>
+    <header class="home-top">
+      <a class="home-name" href="#">Shaan</a>
+      <nav class="home-nav">
+        <a href="#about" data-page="about">About</a>
+        <a href="#projects" data-page="projects">Projects</a>
+        <a href="#blogs" data-page="blogs">Blogs</a>
+        <a href="#experience" data-page="experience">Experience</a>
+        <a href="#life" data-page="life">Life</a>
+      </nav>
+    </header>
+
+    <canvas id="portrait" aria-label="Portrait of Shaan made of small cubes" role="img"></canvas>
+
+    <div class="home-intro">
+      <h1>Hi, I'm Shaan</h1>
+      <p>Designer, developer &amp; storyteller.</p>
+    </div>
+
+    <footer class="home-contact">
+      <a href="mailto:shaangoswami1078@gmail.com">Email</a>
+      <a href="https://www.linkedin.com/in/shaan-goswami-778729274/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://x.com/Shaanjson" target="_blank" rel="noopener">X</a>
+      <a href="https://cal.com/moryasshan" target="_blank" rel="noopener">Book a call</a>
+    </footer>
+  </main>
+
+  <!-- About / Projects / Experience / Blogs, each its own page over the landing page (src/pages.js) -->
+  <div id="page" hidden>
+    <header class="page-top">
+      <a class="home-name" href="#" data-home aria-label="Back to the portrait"><span aria-hidden="true">&larr;</span> Shaan</a>
+      <nav class="home-nav page-nav">
+        <a href="#about" data-page="about">About</a>
+        <a href="#projects" data-page="projects">Projects</a>
+        <a href="#blogs" data-page="blogs">Blogs</a>
+        <a href="#experience" data-page="experience">Experience</a>
+        <a href="#life" data-page="life">Life</a>
+      </nav>
+    </header>
+    <div class="page-scroll"><div class="page-body"></div></div>
+  </div>
 
   <script type="module" src="/src/main.js"></script>
 </body>
