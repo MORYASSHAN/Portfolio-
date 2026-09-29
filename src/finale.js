@@ -334,7 +334,6 @@ export function startFinale(snap, ix, iy, onCta) {
 
     prog += (target - prog) * (1 - Math.exp(-dt * 4.5));
     const p = Math.min(prog, 1), u = prog - 1;
-    hint.classList.toggle('on', scrollOn && (prog < 0.02 || (u > -0.01 && u < 0.04)));
 
     // the moment the whole video is on screen it starts over from the top, then loops forever
     if (!arrived && p > 0.985) { arrived = true; video.currentTime = 0; video.play().catch(() => {}); }
@@ -344,7 +343,9 @@ export function startFinale(snap, ix, iy, onCta) {
     const cover = Math.max((innerWidth / innerHeight) / (16 / 9), (16 / 9) / (innerWidth / innerHeight));
     video.style.transform = `scale(${1 + (cover * 1.04 - 1) * bg})`;
     video.style.filter = bg > 0 ? `brightness(${1 - 0.22 * bg}) saturate(${1 + 0.2 * bg}) contrast(${1 + 0.08 * bg})` : 'none';
-    story.update(u - STORY_AT);
+    // the scroll hint stays up the whole way, until the "Know more" button is showing
+    const ctaIn = story.update(u - STORY_AT);
+    hint.classList.toggle('on', scrollOn && !ctaIn);
     video.style.opacity = smooth(0.965, 1, p);
     if (u > 0.02) return;      // 3D stage is fully behind the video now
 

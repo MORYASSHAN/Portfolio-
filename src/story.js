@@ -63,9 +63,9 @@ export function createStory(onCta) {
     return { el, chars, btn, fx: line.fx, last: i === LINES.length - 1, shown: false };
   });
 
-  // u = scroll units past the moment the video filled the screen
+  // u = scroll units past the moment the video filled the screen; returns true once the CTA is showing
   function update(u) {
-    let current = -1;
+    let current = -1, ctaIn = false;
     lines.forEach((l, i) => {
       const lp = (u - i * SEG) / SEG;            // 0..1 across this line's slot
       const active = lp > 0 && (l.last || lp < 1);
@@ -88,11 +88,12 @@ export function createStory(onCta) {
         const blur = s.blur + x * 8;
         c.style.filter = blur > 0.2 ? `blur(${blur.toFixed(1)}px)` : 'none';
       });
-      if (l.btn) l.btn.classList.toggle('in', enter > 0.9);
+      if (l.btn) { l.btn.classList.toggle('in', enter > 0.9); ctaIn ||= enter > 0.9; }
     });
     root.classList.toggle('on', current >= 0);
     counter.classList.toggle('on', current >= 0);
     if (current >= 0) counter.textContent = `${String(current + 1).padStart(2, '0')} / ${String(LINES.length).padStart(2, '0')}`;
+    return ctaIn;
   }
 
   return { update };
