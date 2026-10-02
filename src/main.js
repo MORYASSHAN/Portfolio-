@@ -8,7 +8,7 @@ import { hasPage, showPage } from './pages.js';
 import { unlockAudio, boom, screenCrack } from './sound.js';
 import { preloadFinale, startFinale } from './finale.js';
 import { startMusic, stopMusic } from './music.js';
-import { SONGS, playSong } from './songs.js';
+import { SONGS, playSong, songJobs } from './songs.js';
 import { showMusicButton } from './musicButton.js';
 import { fetchWithProgress, loadAll } from './preload.js';
 
@@ -84,8 +84,8 @@ skip.addEventListener('click', async () => {
 }, { once: true });
 
 // one click (or Enter/Space) before the host starts typing, so his key clicks are audible
-// The gate doubles as the loading screen: one white bar fills while the finale video and the show's
-// images (SHOW_IMAGES, up top) download, then reads LOADED.
+// The gate doubles as the loading screen: one white bar fills while the finale video, the songs and
+// the show's images (SHOW_IMAGES, up top) download, then reads LOADED.
 function enterGate() {
   const gate = document.getElementById('enter'), barText = gate.querySelector('.boot-text');
   let ready = false, target = 0, shown = 0, loaded = false;
@@ -112,7 +112,7 @@ function enterGate() {
     requestAnimationFrame(tick);
   })();
   loadAll(
-    [(on) => preloadFinale(on), ...SHOW_IMAGES.map((src) => (on) => fetchWithProgress(src, on))],
+    [(on) => preloadFinale(on), ...songJobs(), ...SHOW_IMAGES.map((src) => (on) => fetchWithProgress(src, on))],
     (p) => { target = p; gate.classList.remove('booting'); },
   ).then(() => { target = 1; loaded = true; done(); });   // don't wait for the next frame
 

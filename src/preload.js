@@ -23,17 +23,22 @@ export async function fetchWithProgress(url, onBytes = () => {}) {
   return new Blob(parts, { type: r.headers.get('content-type') || '' });
 }
 
-// jobs: [(onBytes) => Promise]. onProgress(0..1) is weighted by bytes and never moves backwards,
-// even as later files report their sizes. Resolves once every job has finished or failed.
+// jobs: [(onBytes) => Promise]. onProgress(0..1) is weighted by bytes and never moves backwards.
+// It stays quiet until every file has reported its size (or settled), so the percentage is measured
+// against the true grand total instead of one that keeps growing. Resolves once every job has finished or failed.
 export function loadAll(jobs, onProgress) {
-  const got = jobs.map(() => 0), total = jobs.map(() => 0);
+  const got = jobs.map(() => 0), total = jobs.map(() => 0), known = jobs.map(() => false);
   let shown = 0;
   const report = () => {
+    if (!known.every(Boolean)) return;
     const t = total.reduce((a, b) => a + b, 0);
     if (!t) return;
     shown = Math.max(shown, Math.min(1, got.reduce((a, b) => a + b, 0) / t));
     onProgress(shown);
   };
-  return Promise.allSettled(jobs.map((job, i) => job((g, t) => { got[i] = g; if (t) total[i] = t; report(); })))
+  const settle = (i) => { known[i] = true; total[i] = Math.max(total[i], got[i]); report(); };
+  return Promise.allSettled(jobs.map((job, i) =>
+    job((g, t) => { got[i] = g; if (t) { total[i] = t; known[i] = true; } report(); })
+      .finally(() => settle(i))))
     .then(() => onProgress(1));
 }
