@@ -111,12 +111,10 @@ function enterGate() {
     barText.textContent = `LOADING ${Math.floor(shown * 100)}%`;
     requestAnimationFrame(tick);
   })();
-  // only the images (under 1 MB) hold the gate; the 17 MB finale video is a minute or more away,
-  // so it downloads in the background once they're in, without competing for bandwidth
   loadAll(
-    SHOW_IMAGES.map((src) => (on) => fetchWithProgress(src, on)),
+    [(on) => preloadFinale(on), ...SHOW_IMAGES.map((src) => (on) => fetchWithProgress(src, on))],
     (p) => { target = p; gate.classList.remove('booting'); },
-  ).then(() => { target = 1; loaded = true; done(); preloadFinale(); });   // don't wait for the next frame
+  ).then(() => { target = 1; loaded = true; done(); });   // don't wait for the next frame
 
   // the click on LOADED is what lets the browser play sound, so the show waits for it
   return new Promise((resolve) => {
