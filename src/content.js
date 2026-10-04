@@ -264,6 +264,17 @@ export const LIFE = {
 
 export const BLOGS = [
   {
+    key: 'agents',
+    tag: 'AI',
+    title: 'How my curiosity grew my knowledge of making AI agents',
+    sub: 'What an AI agent really is, seen from the field',
+    page: 'agents',
+    cta: 'Read the post',
+    story: 'Every agent demo felt like a trick. Then someone sketched a few boxes on a whiteboard.',
+    body: "An AI agent is not one magic thing. It's a plain application wrapped around a language model, plus a few well-defined pieces that let it read, decide and act. This is the map I wish I'd had: structured output, system prompts, tools and MCP, RAG and the knobs that fix it, and one request traced end to end.",
+    facts: [['5', 'boxes to draw'], ['7', 'RAG knobs'], ['1', 'agent loop'], ['0', 'magic']],
+  },
+  {
     key: 'llm',
     tag: 'AI',
     title: 'Understanding Raw LLMs vs AI Agents',
@@ -296,3 +307,80 @@ export const BLOGS = [
     body: 'A breakdown of Bullet through a startup-growth lens: what they are building, why it matters and what other founders can learn from it. Like most of my startup writing, it started with using the product and talking to the people behind it.',
   },
 ];
+
+// the full "How my curiosity grew my knowledge" post, read in place on the #agents page
+export const AGENT_POST = {
+  title: 'How my curiosity grew my knowledge of making AI agents',
+  lead: "An AI agent is not one magic thing. It's a plain application wrapped around a language model, plus a few well-defined pieces that let it read, decide and act. It took me an embarrassingly long time to see that.",
+  read: '9 min read',
+  arch: [
+    { t: 'Client', s: 'chat, Slack, app', d: "Whatever the user touches: a chat window, a Slack bot, a mobile app. It just sends a message and shows the reply. Nothing smart lives here." },
+    { t: 'App server', s: 'LLM client + MCP client', d: "The real agent. Ordinary backend code (mine was Java with Spring AI) holding two connections: one to the model, one out to tools. The client only ever talks to this box." },
+    { t: 'LLM', s: 'the brain', d: "Reads text and writes text. It doesn't touch your calendar or your database by itself. It can only ask." },
+    { t: 'MCP servers', s: 'the hands', d: "Each one wraps a real system, like Google Calendar, a CRM or a file store, and exposes it as a small set of tools the model can ask for." },
+    { t: 'Knowledge base', s: 'your documents', d: "Your company's own docs, searched before the model answers. The model knows the internet, not your return policy. This is where RAG lives." },
+  ],
+  json: {
+    ask: {
+      label: 'Please return JSON',
+      kind: 'An instruction',
+      code: 'Sure! Here\'s the JSON you requested:\n{\n  "title": "Docker deployment",\n  "attendee": "Rahul",\n  "date": "tomorrow",\n  "time": "4 PM",\n  "durationMinutes": 30\n}',
+      verdict: ['no', 'I could skip that first line. The JSON parser could not.'],
+    },
+    schema: {
+      label: 'Structured output',
+      kind: 'A contract',
+      code: 'public record MeetingRequest(\n    String title,\n    String attendee,\n    String date,\n    String time,\n    int durationMinutes\n) {}\n\nif (meeting.durationMinutes() &gt; 60) requireApproval();',
+      verdict: ['yes', 'The framework makes the model fill fixed slots and maps the result straight into an object. Normal code takes over.'],
+    },
+  },
+  prompt: [
+    { t: 'Role', d: "Who the agent is and who it's talking to.", line: 'You are the support assistant for an electronics store. Users are customers, not staff.' },
+    { t: 'Rules', d: 'The hard lines: what it must never do, when to say "I don\'t know", when to hand off to a human.', line: 'Never make up a policy. If the answer isn\'t in the documents, say "I don\'t know" and hand off to a human.' },
+    { t: 'Tools', d: "When to reach for which tool. The model sees each tool's description, but the system prompt says when to use it.", line: 'Use the order lookup tool only when the customer gives an order number.' },
+    { t: 'Context', d: 'How to treat retrieved documents.', line: 'Prefer the most specific policy over the general one. Only answer from the provided documents.' },
+    { t: 'Output', d: 'Tone, length, and whether the answer is for a human or for code.', line: 'Keep answers short and friendly. They are read by a customer, not by code.' },
+  ],
+  rag: {
+    question: 'Can I return my damaged headphones after 10 days?',
+    policies: { general: ['General returns', '30 days from delivery.'], electronics: ['Electronics returns', '7 days, subject to inspection.'], damaged: ['Damaged products', 'Must be reported within 48 hours.'] },
+    basic: { chunks: ['general'], answer: 'Yes, you have 30 days.', ok: false, note: "Wrong twice over. And the model wasn't stupid: it answered correctly from what it was given. A good LLM can't use a policy that never reaches its context." },
+    tuned: { chunks: ['damaged', 'electronics', 'general'], answer: "Damaged items have to be reported within 48 hours, and electronics returns close after 7 days, so at 10 days this one isn't eligible.", ok: true, note: 'With better retrieval (chunking, filters, reranking) the specific policies finally reach the model, and the system prompt tells it to prefer the most specific policy over the general one.' },
+  },
+  hybrid: {
+    q: 'Does the AX-204 support fast charging?',
+    want: 'AX-204 · Battery and charging',
+    notes: {
+      vector: 'Embeddings match the <b>meaning</b>, "headphones + fast charging", and put the wrong product first.',
+      bm25: 'Keyword search nails the exact code <b>AX-204</b>, but it knows nothing about meaning.',
+      rrf: 'Merged by position with k = 60. The right document wins because <b>both</b> lists rank it highly.',
+    },
+    lists: {
+      vector: ['BX-900 · Fast charging guide', 'AX-204 · Battery and charging', 'Wireless headphones · Buying guide', 'AX-204 · Quick start'],
+      bm25: ['AX-204 · Battery and charging', 'AX-204 · Quick start', 'BX-900 · Fast charging guide'],
+    },
+  },
+  knobs: [
+    { t: 'Better chunking', q: 'Where should documents be split?', d: 'Split blindly by token count and "7 days" lands in one chunk while "damaged items aren\'t eligible" lands in the next. Split on headings first, keep the heading inside the chunk ("Return Policy → Electronics"), then cap the size. Roughly 400 to 600 tokens with 10 to 20% overlap was a decent start, not a rule.' },
+    { t: 'Top-K', q: 'How many candidates should come back?', d: 'Too few and the specific policy gets cut. Too many and the context fills with noise the model has to wade through.' },
+    { t: 'Similarity threshold', q: 'Are even the closest results relevant?', d: 'So "Who won the FIFA World Cup?" doesn\'t drag in return policies just because they\'re the closest thing. One trap: a similarity of 0.90 is not a 90% chance of being right. Test thresholds against real questions.' },
+    { t: 'Metadata filter', q: 'Which subset of documents is eligible?', d: "Narrow the search before it starts, like category in ['electronics', 'general'], so the wrong department's documents never compete." },
+    { t: 'Hybrid search + RRF', q: 'How do we combine meaning with exact terms?', d: 'Embeddings capture meaning, so "wireless headphones + fast charging" can match the wrong product. Keyword search (BM25) catches exact codes like AX-204. Run both and merge them with Reciprocal Rank Fusion.' },
+    { t: 'Reranking', q: 'Which candidates deserve the top spots?', d: 'A second opinion. Fetch 10 to 20 candidates cheaply, then let a cross-encoder read the question and each document together and keep the top 3 to 5. In my demo the damaged-product policy jumped from fourth to first. It can\'t invent a missing document though, only reorder what retrieval found.' },
+    { t: 'Context engineering', q: 'How should the material be handed to the model?', d: 'Even with both policies in context, the model sometimes followed the general 30-day rule over the 7-day electronics one. How you order, label and frame retrieved context matters as much as what you retrieve.' },
+  ],
+  flow: [
+    { t: 'Client → app server', d: 'The chat UI sends the message. Nothing smart yet.' },
+    { t: 'Build the context', d: 'The app server loads the system prompt, recent conversation, and the tool list it got from its MCP servers: Calendar, Docs, Email.' },
+    { t: 'RAG step', d: 'The app searches the knowledge base for "deployment checklist" and adds the top chunks to the context.' },
+    { t: 'First model call', d: 'The LLM reads everything and replies with a tool call: <code>create_event</code> with title, attendee, date, time and duration. Same idea as <code>MeetingRequest</code>, just used as tool arguments.' },
+    { t: 'Calendar MCP server', d: 'The MCP client forwards the call. The server talks to the real calendar API and returns "event created".' },
+    { t: 'Second model call', d: 'The result goes back to the LLM. Now it asks for <code>send_email</code> to Rahul, with the checklist from step 3 in the body.' },
+    { t: 'Loop ends', d: 'The email tool succeeds, the model has nothing left to do, and it writes a normal reply: <b>"Done, the meeting is booked and Rahul has the checklist."</b>' },
+  ],
+  open: [
+    { t: 'Evaluation', d: 'How do you know a change to chunking or Top-K actually made things better, beyond trying five questions by hand?' },
+    { t: 'Context engineering, in depth', d: "I've only scratched the surface of ordering and labelling retrieved context so the model follows the specific rule over the general one." },
+    { t: 'Tool overload', d: 'When an agent has 40 tools from six MCP servers, how do you keep the model from picking the wrong one?' },
+  ],
+};
