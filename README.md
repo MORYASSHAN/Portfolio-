@@ -12,7 +12,7 @@ npm run preview   # serve the production build at http://localhost:4173
 ## Deploy on Vercel
 
 Import this repo in Vercel. `vercel.json` already sets the Vite build (`npm ci` → `npm run build` → `dist/`) and caching, so no settings need changing.
-
+Hey guys checkout <moryasshan.vercel.app> to have an look at my portfolio 
 ## Where things live
 
 - `src/content.js`: every word on the About / Projects / Experience / Blogs / Life pages
