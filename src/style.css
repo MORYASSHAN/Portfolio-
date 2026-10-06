@@ -738,6 +738,13 @@ a:hover > .arr { transform: translate(2px, -2px); }
 .stack { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 32px; }
 .stack .mini { margin-right: 8px; }
 
+/* projects: the design piece, tinted like its holograms */
+.star + .star { margin-top: clamp(28px, 5vh, 48px); }
+.star.design { background: linear-gradient(160deg, rgba(70, 210, 255, 0.08), rgba(255, 255, 255, 0.02) 40%, rgba(255, 255, 255, 0.01)); }
+.star.design .badge { border-color: rgba(70, 210, 255, 0.5); background: rgba(70, 210, 255, 0.1); }
+.star.design .badge span, .star.design .card i { color: #46d2ff; }
+.star.design .writing li::before { background: #46d2ff; }
+
 /* projects: the other three */
 .proj-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 26px; }
 .proj-tabs button {

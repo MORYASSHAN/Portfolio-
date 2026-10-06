@@ -94,6 +94,30 @@ export const ACADEX = {
   stack: ['MongoDB', 'Express.js', 'React.js', 'Node.js', 'Redux', 'REST APIs', 'RBAC', 'System Design'],
 };
 
+export const COSHATTAN = {
+  url: 'https://coshattan.vercel.app',
+  repo: 'https://github.com/MORYASSHAN/Coshattan',
+  tagline: 'Product storytelling, written into a 3D Manhattan.',
+  body: [
+    "Coshattan is a scroll-driven 3D experience about product storytelling, set in my dream of New York. You pick a song, the opening words assemble on screen, and a holographic version of me waits under a galaxy of 50,000 stars. Scroll until the moon rises, press <b>See my dream</b>, and all of Manhattan rises out of the floor around you.",
+    "Every sentence of the story lives at a real place in the city: a banner across Broadway, a line on a rooftop, an ad on a Times Square billboard. The words fade in as the camera reaches them and stay there after you pass. It is built on one idea: <b>just feel the story, not the words.</b>",
+  ],
+  scenes: [
+    { key: 'song', label: 'Song', text: 'It starts with a choice: pick a song to lift your mood. The music fades in and sets the pace for everything that follows.' },
+    { key: 'orbit', label: 'Orbit', text: 'A holographic man stands between two holographic cars on a cursor-reactive grid floor, under a procedural galaxy. Scroll to orbit him while the moon slowly rises.' },
+    { key: 'rise', label: 'Rise', text: 'Press See my dream and the city rises in a wave that starts at Times Square, every building built from real NYC Open Data footprints and roof heights.' },
+    { key: 'tour', label: 'Tour', text: 'The camera glides along a spline past Times Square, Central Park Tower, Hudson Yards, the Empire State Building, the Statue of Liberty and the Brooklyn Bridge, reading the story as it goes.' },
+  ],
+  crafted: [
+    { t: 'A real Manhattan', d: 'Rebuilt from NYC Open Data: building footprints, roof heights, streets, bridges, shoreline and parks, drawn as a glowing wireframe.' },
+    { t: 'Holograms in GLSL', d: 'Custom shaders with Fresnel edges, model-space grids, scan lines and a seam glow where each model meets the floor.' },
+    { t: 'Words in the city', d: 'Sentences written onto walls and streets with a left-to-right writing shader, revealed by how close the camera is.' },
+    { t: 'Living details', d: 'Times Square LED billboards with my own ads, night windows, blinking aircraft beacons and a lit Statue of Liberty torch.' },
+  ],
+  lines: ['Every product is a story. Most forget to tell it.', 'People forget features. They remember feelings.', 'Let silence speak. Let them be the hero.'],
+  stack: ['Three.js', 'GLSL shaders', 'JavaScript', 'NYC Open Data', 'Catmull-Rom camera splines', 'Bloom post-processing', 'Web Audio', 'Vercel'],
+};
+
 export const PROJECTS = [
   {
     key: 'voiceforge',
