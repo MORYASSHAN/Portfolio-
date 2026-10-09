@@ -2,7 +2,7 @@
 // the first one grows out of the nav link as a circle, the same way the landing page opens,
 // and the rest cross-fade in place. Esc, the back button or the name in the corner return to the portrait.
 
-import { CONTACT, ABOUT, ACADEX, COSHATTAN, PROJECTS, EXPERIENCE, BLOGS, LIFE, AGENT_POST } from './content.js';
+import { CONTACT, ABOUT, ACADEX, COSHATTAN, AUREST, PROJECTS, EXPERIENCE, BLOGS, LIFE, AGENT_POST } from './content.js';
 
 const page = document.getElementById('page');
 const scroller = page.querySelector('.page-scroll');
@@ -103,7 +103,7 @@ function projects() {
   <section class="pg-hero reveal">
     ${kicker('02', 'Projects')}
     <h1 class="pg-title">Things I've built, shipped and cared about.</h1>
-    <p class="pg-lead">One star project I work on every day, one design piece I dreamed up, and three I built from scratch. Every one of them taught me something new.</p>
+    <p class="pg-lead">One star project I work on every day, one design piece I dreamed up, one site I built for a startup, and three I built from scratch. Every one of them taught me something new.</p>
   </section>
 
   <article class="star reveal">
@@ -188,6 +188,42 @@ function projects() {
     </div>
 
     <div class="stack"><span class="mini">Stack</span>${chips(COSHATTAN.stack)}</div>
+  </article>
+
+  <article class="star client reveal">
+    <div class="star-head">
+      <p class="badge"><span aria-hidden="true">&#10010;</span> Startup project</p>
+      <h2>Aurest Biotech</h2>
+      <p class="star-tag">${AUREST.tagline} <span>Design & full stack · Built for a startup</span></p>
+      <div class="link-row">${ext(AUREST.url, 'aurest.vercel.app', 'btn primary')}${ext(AUREST.repo, 'GitHub', 'btn')}</div>
+    </div>
+
+    <div class="star-grid">
+      <div class="prose">${AUREST.body.map((p) => `<p>${p}</p>`).join('')}</div>
+      <div class="who spot">
+        <p class="mini">Scroll through the site</p>
+        <div class="seg small" role="tablist" data-group="aurest-scenes">
+          ${AUREST.scenes.map((s, i) => `<button type="button" role="tab" aria-selected="${i === 0}" data-ascene="${s.key}">${s.label}</button>`).join('')}
+        </div>
+        <p class="who-text" data-panel="aurest-scenes">${AUREST.scenes[0].text}</p>
+      </div>
+    </div>
+
+    <h3 class="h3">What I built</h3>
+    <div class="owned">
+      ${AUREST.crafted.map((o, i) => `<div class="card spot"><i>${String(i + 1).padStart(2, '0')}</i><h4>${o.t}</h4><p>${o.d}</p></div>`).join('')}
+    </div>
+
+    <div class="writing spot">
+      <div>
+        <p class="mini">The story on the page</p>
+        <h3>Hard science, said simply.</h3>
+        <p>A biotech site can easily drown people in jargon. I kept every section to one clear idea, so a doctor, an investor or a student can all follow it.</p>
+      </div>
+      <ul>${AUREST.lines.map((w) => `<li>${w}</li>`).join('')}</ul>
+    </div>
+
+    <div class="stack"><span class="mini">Stack</span>${chips(AUREST.stack)}</div>
   </article>
 
   <section class="block reveal">
@@ -744,6 +780,7 @@ page.addEventListener('click', (e) => {
   }
   if (d.arole) { select(t.parentElement, t); swap(body.querySelector('[data-panel="acadex-roles"]'), ACADEX.roles.find((r) => r.key === d.arole).text); return; }
   if (d.cscene) { select(t.parentElement, t); swap(body.querySelector('[data-panel="cosh-scenes"]'), COSHATTAN.scenes.find((s) => s.key === d.cscene).text); return; }
+  if (d.ascene) { select(t.parentElement, t); swap(body.querySelector('[data-panel="aurest-scenes"]'), AUREST.scenes.find((s) => s.key === d.ascene).text); return; }
   if (d.step) { clearInterval(stepTimer); body.querySelector('[data-journey-play]').textContent = 'Play'; setStep(+d.step); return; }
   if ('journeyPlay' in d) { playJourney(t); return; }
   if (d.proj) {

@@ -744,6 +744,10 @@ a:hover > .arr { transform: translate(2px, -2px); }
 .star.design .badge { border-color: rgba(70, 210, 255, 0.5); background: rgba(70, 210, 255, 0.1); }
 .star.design .badge span, .star.design .card i { color: #46d2ff; }
 .star.design .writing li::before { background: #46d2ff; }
+.star.client { background: linear-gradient(160deg, rgba(245, 181, 68, 0.08), rgba(255, 255, 255, 0.02) 40%, rgba(255, 255, 255, 0.01)); }
+.star.client .badge { border-color: rgba(245, 181, 68, 0.5); background: rgba(245, 181, 68, 0.1); }
+.star.client .badge span, .star.client .card i { color: #f5b544; }
+.star.client .writing li::before { background: #f5b544; }
 
 /* projects: the other three */
 .proj-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 26px; }

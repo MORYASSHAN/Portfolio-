@@ -118,6 +118,30 @@ export const COSHATTAN = {
   stack: ['Three.js', 'GLSL shaders', 'JavaScript', 'NYC Open Data', 'Catmull-Rom camera splines', 'Bloom post-processing', 'Web Audio', 'Vercel'],
 };
 
+export const AUREST = {
+  url: 'https://aurest.vercel.app',
+  repo: 'https://github.com/MORYASSHAN/aurest-',
+  tagline: 'A website for a deep-tech biotech startup, built to make hard science feel urgent.',
+  body: [
+    'Aurest Biotech is a deep-tech startup from Jaipur, founded at 18 by Priyanshu Sharma and incubated at MNIT. They build for the moments when medicine runs out of time: severe bleeding, heart attacks, and drugs that are destroyed before they can work. Their first product, <b>V Seal</b>, is a patent-pending vessel sealant for paramedics, soldiers and surgeons.',
+    "I designed and built their website from scratch. The challenge was turning patents and research into a story anyone can follow, so the page opens with one line, <b>Medicine needs more time</b>, set above a slowly turning 3D Earth. Then it walks you from the problem to the technology to the vision, one scroll at a time.",
+  ],
+  scenes: [
+    { key: 'hero', label: 'Hero', text: 'A half-Earth rendered in Three.js with custom day, cloud and atmosphere shaders. It measures its own horizon so the headline always sits in the sky above it, and it stops rendering once you scroll past.' },
+    { key: 'problem', label: 'Problem', text: 'A timeline that fills as you scroll. Each problem card lights up the moment the line reaches it, then the gap Aurest fills is revealed word by word.' },
+    { key: 'tech', label: 'Tech', text: 'On a big screen the lab stage pins in place and scrolling moves you through V Seal, Venom Seal, Cell Fuse and Aurest Kage. On a phone it becomes simple tabs, and arrow keys work everywhere.' },
+    { key: 'contact', label: 'Contact', text: 'A real contact form for researchers, doctors and investors, sent straight to the team over SMTP from a Next.js API route.' },
+  ],
+  crafted: [
+    { t: 'A 3D Earth in GLSL', d: 'Day, cloud and atmosphere layers on a custom shader, with resolution capped on phones and rendering paused off screen to save battery.' },
+    { t: 'Story told by scroll', d: 'Scroll-driven timelines and word-by-word text that light up as you read, all of it throttled with requestAnimationFrame.' },
+    { t: 'A pinned tech explorer', d: 'A scroll-pinned lab stage that only switches on when the screen is big enough, with full keyboard and ARIA tab support.' },
+    { t: 'A contact form that holds up', d: 'Server-side validation, a honeypot that quietly turns bots away, per-IP rate limiting, and a fallback if email ever fails.' },
+  ],
+  lines: ['Medicine needs more time.', 'Stop. Repair. Deliver.', 'Building products, not just papers.'],
+  stack: ['Next.js 15', 'React 19', 'Three.js', 'GLSL shaders', 'Nodemailer', 'Scroll-driven CSS', 'Responsive design', 'Vercel'],
+};
+
 export const PROJECTS = [
   {
     key: 'voiceforge',
