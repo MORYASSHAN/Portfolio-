@@ -2,7 +2,7 @@
 // the first one grows out of the nav link as a circle, the same way the landing page opens,
 // and the rest cross-fade in place. Esc, the back button or the name in the corner return to the portrait.
 
-import { CONTACT, ABOUT, ACADEX, COSHATTAN, AUREST, PROJECTS, EXPERIENCE, BLOGS, LIFE, AGENT_POST } from './content.js';
+import { CONTACT, ABOUT, ACADEX, COSHATTAN, AUREST, MORYACREATIVITY, PROJECTS, EXPERIENCE, BLOGS, LIFE, AGENT_POST } from './content.js';
 
 const page = document.getElementById('page');
 const scroller = page.querySelector('.page-scroll');
@@ -103,7 +103,7 @@ function projects() {
   <section class="pg-hero reveal">
     ${kicker('02', 'Projects')}
     <h1 class="pg-title">Things I've built, shipped and cared about.</h1>
-    <p class="pg-lead">One star project I work on every day, one design piece I dreamed up, one site I built for a startup, and three I built from scratch. Every one of them taught me something new.</p>
+    <p class="pg-lead">One star project I work on every day, one design piece I dreamed up, one site I built for a startup, one showcase that holds all my creative work, and three I built from scratch. Every one of them taught me something new.</p>
   </section>
 
   <article class="star reveal">
@@ -224,6 +224,42 @@ function projects() {
     </div>
 
     <div class="stack"><span class="mini">Stack</span>${chips(AUREST.stack)}</div>
+  </article>
+
+  <article class="star showcase reveal">
+    <div class="star-head">
+      <p class="badge"><span aria-hidden="true">&#10022;</span> Creative showcase</p>
+      <h2>Moryacreativity</h2>
+      <p class="star-tag">${MORYACREATIVITY.tagline} <span>Design, 3D & development · Solo project</span></p>
+      <div class="link-row">${ext(MORYACREATIVITY.url, 'moryacreativity.vercel.app', 'btn primary')}${ext(MORYACREATIVITY.repo, 'GitHub', 'btn')}</div>
+    </div>
+
+    <div class="star-grid">
+      <div class="prose">${MORYACREATIVITY.body.map((p) => `<p>${p}</p>`).join('')}</div>
+      <div class="who spot">
+        <p class="mini">Through the lens</p>
+        <div class="seg small" role="tablist" data-group="morya-scenes">
+          ${MORYACREATIVITY.scenes.map((s, i) => `<button type="button" role="tab" aria-selected="${i === 0}" data-mscene="${s.key}">${s.label}</button>`).join('')}
+        </div>
+        <p class="who-text" data-panel="morya-scenes">${MORYACREATIVITY.scenes[0].text}</p>
+      </div>
+    </div>
+
+    <h3 class="h3">What I crafted</h3>
+    <div class="owned">
+      ${MORYACREATIVITY.crafted.map((o, i) => `<div class="card spot"><i>${String(i + 1).padStart(2, '0')}</i><h4>${o.t}</h4><p>${o.d}</p></div>`).join('')}
+    </div>
+
+    <div class="writing spot">
+      <div>
+        <p class="mini">How you move through it</p>
+        <h3>Every project deserves an entrance.</h3>
+        <p>A grid of thumbnails says nothing. A dive through a lens makes you curious about what is waiting on the other side.</p>
+      </div>
+      <ul>${MORYACREATIVITY.lines.map((w) => `<li>${w}</li>`).join('')}</ul>
+    </div>
+
+    <div class="stack"><span class="mini">Stack</span>${chips(MORYACREATIVITY.stack)}</div>
   </article>
 
   <section class="block reveal">
@@ -781,6 +817,7 @@ page.addEventListener('click', (e) => {
   if (d.arole) { select(t.parentElement, t); swap(body.querySelector('[data-panel="acadex-roles"]'), ACADEX.roles.find((r) => r.key === d.arole).text); return; }
   if (d.cscene) { select(t.parentElement, t); swap(body.querySelector('[data-panel="cosh-scenes"]'), COSHATTAN.scenes.find((s) => s.key === d.cscene).text); return; }
   if (d.ascene) { select(t.parentElement, t); swap(body.querySelector('[data-panel="aurest-scenes"]'), AUREST.scenes.find((s) => s.key === d.ascene).text); return; }
+  if (d.mscene) { select(t.parentElement, t); swap(body.querySelector('[data-panel="morya-scenes"]'), MORYACREATIVITY.scenes.find((s) => s.key === d.mscene).text); return; }
   if (d.step) { clearInterval(stepTimer); body.querySelector('[data-journey-play]').textContent = 'Play'; setStep(+d.step); return; }
   if ('journeyPlay' in d) { playJourney(t); return; }
   if (d.proj) {

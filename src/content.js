@@ -142,6 +142,30 @@ export const AUREST = {
   stack: ['Next.js 15', 'React 19', 'Three.js', 'GLSL shaders', 'Nodemailer', 'Scroll-driven CSS', 'Responsive design', 'Vercel'],
 };
 
+export const MORYACREATIVITY = {
+  url: 'https://moryacreativity.vercel.app',
+  repo: 'https://github.com/MORYASSHAN/moryacreativity',
+  tagline: 'My creative showcase, hidden behind the lens of a vintage camera.',
+  body: [
+    'Moryacreativity is where all my creative work lives. It opens on a vintage rangefinder seen from the back. Scroll, and the camera flies through the lens: the iris blades open, you pass the glass elements, and you come out the other side into a galaxy where every project floats as a card.',
+    "Inside are <b>eleven projects</b>: three live sites, including this portfolio, Coshattan and the JuteIt store, plus eight concept landing pages like FUWA, EMBER, HANAMI and SCRAMBLE. Move the cursor to look around, hover a card to bring it closer, and click to open its case study. It is a portfolio of portfolios, built on one idea: <b>every project deserves an entrance.</b>",
+  ],
+  scenes: [
+    { key: 'camera', label: 'Camera', text: 'A vintage rangefinder built in React Three Fiber, seen from the back. It sits still and waits until you start to scroll.' },
+    { key: 'lens', label: 'Lens', text: 'Scrolling drives the dive. A nine-blade iris drawn in a shader opens up, and the camera flies through the lens elements to the other side.' },
+    { key: 'galaxy', label: 'Galaxy', text: 'Every project floats as a card among the stars. Move the cursor to look around, hover a card to lift it, and click to open it.' },
+    { key: 'cases', label: 'Cases', text: 'Each card opens a static case study or concept landing page with its own story, chapters and look. Add /#galaxy to the link to skip the dive.' },
+  ],
+  crafted: [
+    { t: 'A camera in GLSL', d: 'A rangefinder modelled in three.js, with a nine-blade iris drawn in a custom shader that turns see-through so the camera can fly into it.' },
+    { t: 'A dive driven by scroll', d: 'One timeline maps scroll to the whole flight through the lens, eased from the camera body to the open galaxy.' },
+    { t: 'A galaxy of projects', d: 'Cards laid out in 3D space with textures baked by a build script, so adding a project is one entry and one cover image.' },
+    { t: 'Eight concepts, eight looks', d: 'Plush physics, crayon flames on canvas, falling petals, rain on glass: each concept page has its own art direction.' },
+  ],
+  lines: ['Scroll to dive through the lens.', 'Every project floats in the galaxy.', 'Hover a card. Click to open it.'],
+  stack: ['React 19', 'React Three Fiber', 'Three.js', 'GLSL shaders', 'Post-processing', 'Vite', 'Sharp', 'Vercel'],
+};
+
 export const PROJECTS = [
   {
     key: 'voiceforge',

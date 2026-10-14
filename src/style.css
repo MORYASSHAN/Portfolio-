@@ -748,6 +748,10 @@ a:hover > .arr { transform: translate(2px, -2px); }
 .star.client .badge { border-color: rgba(245, 181, 68, 0.5); background: rgba(245, 181, 68, 0.1); }
 .star.client .badge span, .star.client .card i { color: #f5b544; }
 .star.client .writing li::before { background: #f5b544; }
+.star.showcase { background: linear-gradient(160deg, rgba(168, 120, 255, 0.09), rgba(255, 255, 255, 0.02) 40%, rgba(255, 255, 255, 0.01)); }
+.star.showcase .badge { border-color: rgba(168, 120, 255, 0.5); background: rgba(168, 120, 255, 0.1); }
+.star.showcase .badge span, .star.showcase .card i { color: #a878ff; }
+.star.showcase .writing li::before { background: #a878ff; }
 
 /* projects: the other three */
 .proj-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 26px; }
