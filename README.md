@@ -1,4 +1,4 @@
-# Shaan Goswami — Developer Portfolio
+# Shaan Goswami  Developer Portfolio
 
 <p align="center">
   <a href="https://moryasshan.vercel.app">
