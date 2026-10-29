@@ -4,3 +4,6 @@ dist/
 .DS_Store
 Thumbs.db
 *.log
+
+# npm cache
+$d/npm-cache/
