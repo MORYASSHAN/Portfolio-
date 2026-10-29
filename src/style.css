@@ -707,7 +707,7 @@ a:hover > .arr { transform: translate(2px, -2px); }
   border: 1px solid rgba(255, 90, 106, 0.5); background: rgba(255, 90, 106, 0.1);
 }
 .badge span { color: var(--accent); }
-.star h2 { margin-top: 18px; font: 600 clamp(48px, 8vw, 104px)/0.95 "Oswald", sans-serif; text-transform: uppercase; color: #fff; letter-spacing: 0.01em; }
+.star h2 { margin-top: 18px; font: 600 clamp(min(48px, 10.5vw), 8vw, 104px)/0.95 "Oswald", sans-serif; text-transform: uppercase; color: #fff; letter-spacing: 0.01em; }
 .star-tag { margin-top: 12px; font-size: clamp(16px, 1.8vw, 20px); color: #fff; }
 .star-tag span { display: block; margin-top: 6px; font-size: 13.5px; color: var(--mute); }
 .star-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: clamp(24px, 4vw, 48px); margin-top: 40px; align-items: start; }
@@ -748,6 +748,10 @@ a:hover > .arr { transform: translate(2px, -2px); }
 .star.client .badge { border-color: rgba(245, 181, 68, 0.5); background: rgba(245, 181, 68, 0.1); }
 .star.client .badge span, .star.client .card i { color: #f5b544; }
 .star.client .writing li::before { background: #f5b544; }
+.star.pink { background: linear-gradient(160deg, rgba(255, 110, 160, 0.09), rgba(255, 255, 255, 0.02) 40%, rgba(255, 255, 255, 0.01)); }
+.star.pink .badge { border-color: rgba(255, 110, 160, 0.5); background: rgba(255, 110, 160, 0.1); }
+.star.pink .badge span, .star.pink .card i { color: #ff6ea0; }
+.star.pink .writing li::before { background: #ff6ea0; }
 .star.showcase { background: linear-gradient(160deg, rgba(168, 120, 255, 0.09), rgba(255, 255, 255, 0.02) 40%, rgba(255, 255, 255, 0.01)); }
 .star.showcase .badge { border-color: rgba(168, 120, 255, 0.5); background: rgba(168, 120, 255, 0.1); }
 .star.showcase .badge span, .star.showcase .card i { color: #a878ff; }

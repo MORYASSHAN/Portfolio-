@@ -142,6 +142,30 @@ export const AUREST = {
   stack: ['Next.js 15', 'React 19', 'Three.js', 'GLSL shaders', 'Nodemailer', 'Scroll-driven CSS', 'Responsive design', 'Vercel'],
 };
 
+export const DFORR = {
+  url: 'https://dforr.vercel.app',
+  repo: 'https://github.com/MORYASSHAN/dforr',
+  tagline: 'The website for a pre-seed social startup that wants you in the room, not in a feed.',
+  body: [
+    "DFORR is a pre-seed startup from Jaipur building <b>Maya</b>, a social app where you meet friends in live 3D places on your phone instead of scrolling a feed: a concert you attend from the front podium, a rooftop with just your people, an atelier that fits clothes to your own body scan.",
+    "I designed and built their website from scratch. Maya isn't out yet, so the site has to make people feel an app they can't download. It tells one evening in Maya, chapter by chapter, with design previews of the app inside a pinned phone, a 3D field of floating cards and a Jaipur <b>Pink City</b> palette. Every illustration on it is original and drawn in code.",
+  ],
+  scenes: [
+    { key: 'hero', label: 'Hero', text: 'A 3D field of floating cards built in three.js, each one a moment from the same evening in Maya. One line says what the app is: places, not posts.' },
+    { key: 'evening', label: 'Evening', text: 'A pinned phone walks you through one evening: get dressed in the atelier, take your seat at the concert, meet friends on the rooftop, then wind down with your AI companion.' },
+    { key: 'engine', label: 'Engine', text: 'A draggable 3D scene of the five systems DFORR is building: spatial view, positional sound, living faces, cloth physics and zero-knowledge privacy.' },
+    { key: 'careers', label: 'Careers', text: 'A careers page with 12 founding engineering roles, and early access and job forms that open your email app already filled in, so it works with no server yet.' },
+  ],
+  crafted: [
+    { t: 'Chapters that land', d: 'Each section slides up and straightens like a card landing on a table, with smooth scrolling from Lenis and GSAP ScrollTrigger.' },
+    { t: 'An app inside the page', d: 'A pinned phone mockup with real app screens drawn in code: the arena, the atelier, private rooms and the companion.' },
+    { t: 'Twelve original tiles', d: 'Jaipur folk illustrations, from jali and leheriya to kites and peacocks, written as SVG components so any section can use one.' },
+    { t: 'Honest copy', d: 'Maya is pre-launch, so every number is labeled as a target and every fact has one home in the story. It also respects reduced motion.' },
+  ],
+  lines: ['Presence over feeds.', 'Be in the room.', 'Made in Jaipur.'],
+  stack: ['Next.js 16', 'React 19', 'TypeScript', 'Three.js', 'React Three Fiber', 'GSAP', 'Lenis', 'Vercel'],
+};
+
 export const MORYACREATIVITY = {
   url: 'https://moryacreativity.vercel.app',
   repo: 'https://github.com/MORYASSHAN/moryacreativity',
