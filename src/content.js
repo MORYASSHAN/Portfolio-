@@ -166,6 +166,30 @@ export const DFORR = {
   stack: ['Next.js 16', 'React 19', 'TypeScript', 'Three.js', 'React Three Fiber', 'GSAP', 'Lenis', 'Vercel'],
 };
 
+export const PANKAJ = {
+  url: 'https://pankajdforr.vercel.app',
+  repo: 'https://github.com/MORYASSHAN/pankajdev',
+  tagline: 'A personal portfolio for the founder of DFORR, who builds what comes after the feed.',
+  body: [
+    "Pankaj Kumar Sharma is the founder, CEO and director of DFORR, the Jaipur startup building <b>Maya</b>. He's a designer, coder, artist and systems architect, and he needed a site that was about him, not only about the company: who he is, what he believes, and the work behind it.",
+    "I designed and built his portfolio from scratch. It opens on one line, <b>Basically, I build what comes after the feed</b>, over a live shader of dark red and orange light that follows your cursor. From there it moves from his vision to DFORR and Maya, then to six of his projects, his skills and his awards. A few small tools along the way make his ideas something you can try.",
+  ],
+  scenes: [
+    { key: 'hero', label: 'Hero', text: 'A full-screen GLSL shader of warped noise in ember tones, eased toward your cursor with film grain on top. As you scroll his name splits apart and a phrase resolves letter by letter from blur to sharp.' },
+    { key: 'vision', label: 'Vision', text: 'Today\'s feeds next to the Maya world, then a screen-time calculator: pick how many hours a day you scroll and see the hours you lose in a year, measured in books and real conversations.' },
+    { key: 'maya', label: 'Maya', text: 'The product section, with a positional audio demo. Drag a friend from 1 to 15 metres away and the level drops like real sound, from a whisper to a room conversation to an ambient murmur.' },
+    { key: 'work', label: 'Work', text: 'Six expandable project cards, from Maya Spatial and Wishtara to MahaBhav, Tingle and Taste Roast, then his skills, awards and a contact section with a live IST clock.' },
+  ],
+  crafted: [
+    { t: 'A shader with a pulse', d: 'One full-screen quad in three.js with domain-warped simplex noise, a mouse glow, a noisy dissolve on load and a fade out as you leave.' },
+    { t: 'A name that comes apart', d: 'Scrubbed GSAP ScrollTrigger timelines split his name sideways and reveal a phrase character by character, with Lenis smooth scrolling.' },
+    { t: 'Ideas you can try', d: 'A screen-time calculator and a distance-based audio demo turn his pitch into something a visitor can play with in seconds.' },
+    { t: 'Built to be kept up', d: 'Every section is its own component fed by one content file, so he can update projects and awards without touching the layout.' },
+  ],
+  lines: ['Basically, I build what comes after the feed.', 'We give you your life back, not take it away.', 'Software should be like good architecture.'],
+  stack: ['Next.js 15', 'React 19', 'Three.js', 'GLSL shaders', 'GSAP', 'ScrollTrigger', 'Lenis', 'Vercel'],
+};
+
 export const MORYACREATIVITY = {
   url: 'https://moryacreativity.vercel.app',
   repo: 'https://github.com/MORYASSHAN/moryacreativity',

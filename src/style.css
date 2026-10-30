@@ -752,6 +752,10 @@ a:hover > .arr { transform: translate(2px, -2px); }
 .star.pink .badge { border-color: rgba(255, 110, 160, 0.5); background: rgba(255, 110, 160, 0.1); }
 .star.pink .badge span, .star.pink .card i { color: #ff6ea0; }
 .star.pink .writing li::before { background: #ff6ea0; }
+.star.ember { background: linear-gradient(160deg, rgba(255, 106, 61, 0.09), rgba(255, 255, 255, 0.02) 40%, rgba(255, 255, 255, 0.01)); }
+.star.ember .badge { border-color: rgba(255, 106, 61, 0.5); background: rgba(255, 106, 61, 0.1); }
+.star.ember .badge span, .star.ember .card i { color: #ff6a3d; }
+.star.ember .writing li::before { background: #ff6a3d; }
 .star.showcase { background: linear-gradient(160deg, rgba(168, 120, 255, 0.09), rgba(255, 255, 255, 0.02) 40%, rgba(255, 255, 255, 0.01)); }
 .star.showcase .badge { border-color: rgba(168, 120, 255, 0.5); background: rgba(168, 120, 255, 0.1); }
 .star.showcase .badge span, .star.showcase .card i { color: #a878ff; }

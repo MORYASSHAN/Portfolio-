@@ -2,7 +2,7 @@
 // the first one grows out of the nav link as a circle, the same way the landing page opens,
 // and the rest cross-fade in place. Esc, the back button or the name in the corner return to the portrait.
 
-import { CONTACT, ABOUT, ACADEX, COSHATTAN, AUREST, DFORR, MORYACREATIVITY, PROJECTS, EXPERIENCE, BLOGS, LIFE, AGENT_POST } from './content.js';
+import { CONTACT, ABOUT, ACADEX, COSHATTAN, AUREST, DFORR, PANKAJ, MORYACREATIVITY, PROJECTS, EXPERIENCE, BLOGS, LIFE, AGENT_POST } from './content.js';
 
 const page = document.getElementById('page');
 const scroller = page.querySelector('.page-scroll');
@@ -260,6 +260,42 @@ function projects() {
     </div>
 
     <div class="stack"><span class="mini">Stack</span>${chips(DFORR.stack)}</div>
+  </article>
+
+  <article class="star ember reveal">
+    <div class="star-head">
+      <p class="badge"><span aria-hidden="true">&#10038;</span> Client project</p>
+      <h2>Pankaj Sharma</h2>
+      <p class="star-tag">${PANKAJ.tagline} <span>Design & development · Built for a client</span></p>
+      <div class="link-row">${ext(PANKAJ.url, 'pankajdforr.vercel.app', 'btn primary')}${ext(PANKAJ.repo, 'GitHub', 'btn')}</div>
+    </div>
+
+    <div class="star-grid">
+      <div class="prose">${PANKAJ.body.map((p) => `<p>${p}</p>`).join('')}</div>
+      <div class="who spot">
+        <p class="mini">Scroll through the site</p>
+        <div class="seg small" role="tablist" data-group="pankaj-scenes">
+          ${PANKAJ.scenes.map((s, i) => `<button type="button" role="tab" aria-selected="${i === 0}" data-pscene="${s.key}">${s.label}</button>`).join('')}
+        </div>
+        <p class="who-text" data-panel="pankaj-scenes">${PANKAJ.scenes[0].text}</p>
+      </div>
+    </div>
+
+    <h3 class="h3">What I built</h3>
+    <div class="owned">
+      ${PANKAJ.crafted.map((o, i) => `<div class="card spot"><i>${String(i + 1).padStart(2, '0')}</i><h4>${o.t}</h4><p>${o.d}</p></div>`).join('')}
+    </div>
+
+    <div class="writing spot">
+      <div>
+        <p class="mini">The story on the page</p>
+        <h3>A founder, not a résumé.</h3>
+        <p>The company has its own site. This one had to show the person behind it: what he believes first, then what he has built.</p>
+      </div>
+      <ul>${PANKAJ.lines.map((w) => `<li>${w}</li>`).join('')}</ul>
+    </div>
+
+    <div class="stack"><span class="mini">Stack</span>${chips(PANKAJ.stack)}</div>
   </article>
 
   <article class="star showcase reveal">
@@ -854,6 +890,7 @@ page.addEventListener('click', (e) => {
   if (d.cscene) { select(t.parentElement, t); swap(body.querySelector('[data-panel="cosh-scenes"]'), COSHATTAN.scenes.find((s) => s.key === d.cscene).text); return; }
   if (d.ascene) { select(t.parentElement, t); swap(body.querySelector('[data-panel="aurest-scenes"]'), AUREST.scenes.find((s) => s.key === d.ascene).text); return; }
   if (d.dscene) { select(t.parentElement, t); swap(body.querySelector('[data-panel="dforr-scenes"]'), DFORR.scenes.find((s) => s.key === d.dscene).text); return; }
+  if (d.pscene) { select(t.parentElement, t); swap(body.querySelector('[data-panel="pankaj-scenes"]'), PANKAJ.scenes.find((s) => s.key === d.pscene).text); return; }
   if (d.mscene) { select(t.parentElement, t); swap(body.querySelector('[data-panel="morya-scenes"]'), MORYACREATIVITY.scenes.find((s) => s.key === d.mscene).text); return; }
   if (d.step) { clearInterval(stepTimer); body.querySelector('[data-journey-play]').textContent = 'Play'; setStep(+d.step); return; }
   if ('journeyPlay' in d) { playJourney(t); return; }
