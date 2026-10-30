@@ -119,7 +119,7 @@ export const COSHATTAN = {
 };
 
 export const AUREST = {
-  url: 'https://aurest.vercel.app',
+  url: 'https://aurestbiotech.com',
   repo: 'https://github.com/MORYASSHAN/aurest-',
   tagline: 'A website for a deep-tech biotech startup, built to make hard science feel urgent.',
   body: [

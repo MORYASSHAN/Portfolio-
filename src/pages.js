@@ -195,7 +195,7 @@ function projects() {
       <p class="badge"><span aria-hidden="true">&#10010;</span> Startup project</p>
       <h2>Aurest Biotech</h2>
       <p class="star-tag">${AUREST.tagline} <span>Design & full stack · Built for a startup</span></p>
-      <div class="link-row">${ext(AUREST.url, 'aurest.vercel.app', 'btn primary')}${ext(AUREST.repo, 'GitHub', 'btn')}</div>
+      <div class="link-row">${ext(AUREST.url, 'aurestbiotech.com','btn primary')}${ext(AUREST.repo, 'GitHub', 'btn')}</div>
     </div>
 
     <div class="star-grid">
