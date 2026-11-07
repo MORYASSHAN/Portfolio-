@@ -524,6 +524,35 @@ body.armed #music-btn { cursor: none; }
 .home-intro h1 { font: 600 clamp(28px, 4vw, 52px)/1 "Oswald", sans-serif; letter-spacing: 0.04em; text-transform: uppercase; color: #fff; }
 .home-intro p { margin-top: 10px; font-size: 14px; color: rgba(255, 255, 255, 0.6); }
 
+/* story mode: the Vegas show, opt-in from the bottom-left corner */
+.story-btn {
+  margin-top: 22px; display: flex; align-items: center; gap: 14px;
+  padding: 10px 20px 10px 10px; border-radius: 16px; cursor: pointer; text-align: left;
+  width: min(330px, calc(100vw - 32px));
+  background: linear-gradient(120deg, rgba(255, 46, 99, 0.16), rgba(255, 170, 60, 0.06) 60%, rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 90, 120, 0.4); color: #fff;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 0 0 0 rgba(255, 46, 99, 0.4), 0 10px 40px -12px rgba(255, 46, 99, 0.45);
+  transition: transform 0.3s ease, border-color 0.3s, background 0.3s;
+  animation: storyGlow 3s ease-in-out infinite;
+}
+.story-btn:hover { transform: translateY(-2px); border-color: rgba(255, 120, 140, 0.8); }
+.story-btn:focus-visible { outline: 2px solid #ff5a78; outline-offset: 3px; }
+.sb-play {
+  flex: none; width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center;
+  background: #ff2e63; color: #fff; box-shadow: 0 0 24px rgba(255, 46, 99, 0.6);
+  transition: transform 0.3s ease;
+}
+.story-btn:hover .sb-play { transform: scale(1.06); }
+.sb-play svg { width: 20px; height: 20px; margin-left: 2px; }
+.sb-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.sb-kicker { font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255, 255, 255, 0.55); }
+.sb-title { font: 600 19px/1.1 "Oswald", sans-serif; letter-spacing: 0.08em; text-transform: uppercase; }
+.sb-line { font-size: 12.5px; color: rgba(255, 210, 215, 0.85); min-height: 1.4em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sb-line::after { content: ""; display: inline-block; width: 1px; height: 1em; margin-left: 2px; vertical-align: -2px; background: currentColor; animation: sbBlink 1s steps(1) infinite; }
+@keyframes storyGlow { 50% { box-shadow: 0 0 0 6px rgba(255, 46, 99, 0), 0 10px 50px -10px rgba(255, 46, 99, 0.7); } }
+@keyframes sbBlink { 50% { opacity: 0; } }
+
 .home-contact {
   grid-row: 3; justify-self: end; align-self: end;
   display: flex; flex-wrap: wrap; gap: clamp(14px, 2.4vw, 28px);
@@ -695,6 +724,44 @@ a:hover > .arr { transform: translate(2px, -2px); }
 .socials a:hover { color: #fff; }
 .back-home { margin-top: 48px; background: none; border: 0; color: var(--mute); font: 500 13px "Inter", sans-serif; letter-spacing: 0.06em; cursor: pointer; transition: color 0.25s; }
 .back-home:hover { color: #fff; }
+
+/* projects: short cards in four groups, each group with its own colour */
+.wfilters { margin-top: 8px; position: sticky; top: 0; z-index: 3; padding: 12px 0; background: linear-gradient(#000 70%, transparent); }
+.wfilters i { font-style: normal; font-size: 11px; opacity: 0.55; margin-left: 4px; }
+.wgroup { --c: 255, 90, 106; margin-top: clamp(36px, 6vh, 64px); }
+.wgroup[hidden] { display: none; }
+.cat-ai { --c: 124, 243, 196; }
+.cat-design { --c: 70, 210, 255; }
+.cat-product { --c: 255, 90, 106; }
+.cat-client { --c: 245, 181, 68; }
+.wgroup .badge { border-color: rgba(var(--c), 0.5); background: rgba(var(--c), 0.1); }
+.wgroup .badge span { color: rgb(var(--c)); }
+.wgroup-head .sub { margin-top: 12px; }
+.wgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 14px; margin-top: 20px; }
+.wcard {
+  display: flex; flex-direction: column; padding: 22px; border-radius: 20px;
+  background: linear-gradient(160deg, rgba(var(--c), 0.07), rgba(255, 255, 255, 0.015) 55%);
+  border: 1px solid rgba(var(--c), 0.22); transition: border-color 0.3s, transform 0.3s;
+}
+.wcard:hover { border-color: rgba(var(--c), 0.55); transform: translateY(-2px); }
+.wcard.is-star { border-color: rgba(var(--c), 0.5); }
+.wcard-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.wcard h3 { font: 600 clamp(24px, 2.6vw, 30px)/1 "Oswald", sans-serif; text-transform: uppercase; letter-spacing: 0.02em; color: #fff; }
+.wstar { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #fff; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(var(--c), 0.5); background: rgba(var(--c), 0.12); }
+.wstar span { color: rgb(var(--c)); }
+.wrole { margin-top: 8px; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: rgb(var(--c)); }
+.wshort { margin-top: 12px; font-size: 15px; line-height: 1.6; color: var(--text); flex: 1; }
+.wchips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+.wchips .chip { padding: 4px 10px; font-size: 11.5px; }
+.wfoot { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+.wfoot .link-row { margin-top: 0; gap: 8px; }
+.btn.small { padding: 8px 14px; font-size: 12.5px; }
+.wmore { background: none; border: 0; padding: 6px 0; cursor: pointer; font: 500 12.5px "Inter", sans-serif; color: var(--mute); transition: color 0.25s; }
+.wmore:hover, .wmore[aria-expanded="true"] { color: rgb(var(--c)); }
+.wbody { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+.wbody p { font-size: 14px; line-height: 1.7; color: var(--text); }
+.wbody p + p { margin-top: 10px; }
+.wbody b { color: #fff; font-weight: 500; }
 
 /* projects: the star */
 .star {

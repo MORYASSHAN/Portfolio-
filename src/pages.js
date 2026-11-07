@@ -98,294 +98,82 @@ function modePanel(key) {
   return `<h3>${m.title}</h3><p>${m.body}</p><div class="chips">${chips(m.points)}</div>`;
 }
 
+// Projects, grouped by kind. Each card is a two or three line pitch; "Read more" opens the longer story.
+const CATS = [
+  { key: 'ai', label: 'AI', icon: '&#10022;', title: 'AI projects', sub: 'Agents and AI products that talk, write and think.' },
+  { key: 'design', label: 'Design', icon: '&#9670;', title: 'Design & 3D', sub: 'Pieces I dreamed up, where the story is the interface.' },
+  { key: 'product', label: 'Products', icon: '&#9733;', title: 'Products', sub: 'Full stack platforms with real users, roles and data.' },
+  { key: 'client', label: 'Startups & clients', icon: '&#10010;', title: 'Startups & clients', sub: 'Sites I designed and built for founders and young companies.' },
+];
+
+const host = (u) => u.replace(/^https?:\/\//, '');
+const [VOICEFORGE, JUTEIT, MEAKLY] = PROJECTS;
+
+const WORK = [
+  { cat: 'ai', name: 'VoiceForge', role: 'Open-source voice AI', live: null, repo: VOICEFORGE.repo, body: VOICEFORGE.body, stack: VOICEFORGE.stack,
+    short: 'A starter kit for real-time voice agents. You talk, it answers out loud in under 400ms, and it stops the moment you cut in.' },
+  { cat: 'ai', name: 'Meakly', role: 'AI SaaS · 8 microservices', live: null, repo: MEAKLY.repo, body: MEAKLY.body, stack: MEAKLY.stack,
+    short: 'An AI workbench that writes cold emails worth replying to. Eight services behind one gateway, with Stripe billing and usage quotas.' },
+  { cat: 'design', name: 'Coshattan', role: 'Design, story & 3D · Solo', live: COSHATTAN.url, repo: COSHATTAN.repo, body: COSHATTAN.body, stack: COSHATTAN.stack,
+    short: 'A scroll-driven 3D Manhattan where every line of a story about product storytelling sits on a real building, banner or billboard.' },
+  { cat: 'design', name: 'Moryacreativity', role: 'Creative showcase · Solo', live: MORYACREATIVITY.url, repo: MORYACREATIVITY.repo, body: MORYACREATIVITY.body, stack: MORYACREATIVITY.stack,
+    short: 'My creative work behind the lens of a vintage camera. Scroll to dive through it into a galaxy where eleven projects float as cards.' },
+  { cat: 'product', name: 'Acadex', role: 'Full Stack Engineer · Ereefian', star: true, live: ACADEX.url, repo: null, body: ACADEX.body, stack: ACADEX.stack,
+    short: 'One home for everything academic: timetables, attendance and exams for students, teachers and admins. I build across the stack, from APIs to role-based access.' },
+  { cat: 'product', name: 'JuteIt', role: 'E-commerce platform', live: JUTEIT.live, repo: JUTEIT.repo, body: JUTEIT.body, stack: JUTEIT.stack,
+    short: 'A store for eco-friendly jute products with a 3D storefront, and a full owner dashboard for products, orders and banners behind it.' },
+  { cat: 'client', name: 'Aurest Biotech', role: 'Design & full stack · Startup', live: AUREST.url, repo: AUREST.repo, body: AUREST.body, stack: AUREST.stack,
+    short: 'The site for a deep-tech biotech startup. A shader-lit 3D Earth and a scroll-told story that turn patents into something anyone can follow.' },
+  { cat: 'client', name: 'DFORR', role: 'Design & development · Startup', live: DFORR.url, repo: DFORR.repo, body: DFORR.body, stack: DFORR.stack,
+    short: 'The site for a pre-seed social startup building Maya. It tells one evening in the app, chapter by chapter, inside a pinned phone.' },
+  { cat: 'client', name: 'Pankaj Sharma', role: 'Design & development · Client', live: PANKAJ.url, repo: PANKAJ.repo, body: PANKAJ.body, stack: PANKAJ.stack,
+    short: "A portfolio for DFORR's founder: an ember shader that follows your cursor, his vision, and small tools that make his ideas playable." },
+];
+
+function workCard(w) {
+  const links = [];
+  if (w.live) links.push(ext(w.live, host(w.live), 'btn primary small'));
+  if (w.repo) links.push(ext(w.repo, 'GitHub', 'btn small'));
+  return `
+    <article class="wcard spot${w.star ? ' is-star' : ''}">
+      <div class="wcard-top">
+        <h3>${w.name}</h3>
+        ${w.star ? '<span class="wstar"><span aria-hidden="true">&#9733;</span> Star</span>' : ''}
+      </div>
+      <p class="wrole">${w.role}</p>
+      <p class="wshort">${w.short}</p>
+      <div class="wchips">${chips(w.stack.slice(0, 4), 'chip dim')}</div>
+      <div class="wfoot">
+        <div class="link-row">${links.join('')}</div>
+        <button type="button" class="wmore" aria-expanded="false">Read more</button>
+      </div>
+      <div class="wbody" hidden>${w.body.map((p) => `<p>${p}</p>`).join('')}<div class="wchips">${chips(w.stack, 'chip dim')}</div></div>
+    </article>`;
+}
+
 function projects() {
   return `
   <section class="pg-hero reveal">
     ${kicker('02', 'Projects')}
     <h1 class="pg-title">Things I've built, shipped and cared about.</h1>
-    <p class="pg-lead">One star project I work on every day, one design piece I dreamed up, two sites I built for startups, one showcase that holds all my creative work, and three I built from scratch. Every one of them taught me something new.</p>
+    <p class="pg-lead">Nine projects in four groups. Each one in a few lines; open any card for the full story.</p>
   </section>
 
-  <article class="star reveal">
-    <div class="star-head">
-      <p class="badge"><span aria-hidden="true">&#9733;</span> Star project</p>
-      <h2>Acadex</h2>
-      <p class="star-tag">${ACADEX.tagline} <span>Full Stack Engineer · Ereefian</span></p>
-      <div class="link-row">${ext(ACADEX.url, 'acadex.ereefian.com', 'btn primary')}</div>
-    </div>
+  <div class="filters wfilters reveal" data-group="work">
+    <button type="button" class="on" data-work="all">All <i>${WORK.length}</i></button>
+    ${CATS.map((c) => `<button type="button" data-work="${c.key}">${c.label} <i>${WORK.filter((w) => w.cat === c.key).length}</i></button>`).join('')}
+  </div>
 
-    <div class="star-grid">
-      <div class="prose">${ACADEX.body.map((p) => `<p>${p}</p>`).join('')}</div>
-      <div class="who spot">
-        <p class="mini">Built for</p>
-        <div class="seg small" role="tablist" data-group="acadex-roles">
-          ${ACADEX.roles.map((r, i) => `<button type="button" role="tab" aria-selected="${i === 0}" data-arole="${r.key}">${r.label}</button>`).join('')}
-        </div>
-        <p class="who-text" data-panel="acadex-roles">${ACADEX.roles[0].text}</p>
-      </div>
-    </div>
-
-    <div class="journey">
-      <div class="journey-head">
-        <h3 class="h3">How a feature travels, from idea to live</h3>
-        <button type="button" class="ghost" data-journey-play>Play</button>
-      </div>
-      <div class="steps" role="tablist">
-        ${ACADEX.steps.map((s, i) => `<button type="button" role="tab" aria-selected="${i === 0}" data-step="${i}"><i>${String(i + 1).padStart(2, '0')}</i>${s.t}</button>`).join('')}
-        <span class="steps-bar"><span></span></span>
-      </div>
-      <p class="step-text" data-panel="steps">${ACADEX.steps[0].d}</p>
-    </div>
-
-    <h3 class="h3">What I owned</h3>
-    <div class="owned">
-      ${ACADEX.owned.map((o, i) => `<div class="card spot"><i>${String(i + 1).padStart(2, '0')}</i><h4>${o.t}</h4><p>${o.d}</p></div>`).join('')}
-    </div>
-
-    <div class="writing spot">
-      <div>
-        <p class="mini">Writing Head</p>
-        <h3>${ACADEX.writing.title}</h3>
-        <p>${ACADEX.writing.body}</p>
-      </div>
-      <ul>${ACADEX.writing.items.map((w) => `<li>${w}</li>`).join('')}</ul>
-    </div>
-
-    <div class="stack"><span class="mini">Stack</span>${chips(ACADEX.stack)}</div>
-  </article>
-
-  <article class="star design reveal">
-    <div class="star-head">
-      <p class="badge"><span aria-hidden="true">&#9670;</span> Design project</p>
-      <h2>Coshattan</h2>
-      <p class="star-tag">${COSHATTAN.tagline} <span>Design, story & 3D · Solo project</span></p>
-      <div class="link-row">${ext(COSHATTAN.url, 'coshattan.vercel.app', 'btn primary')}${ext(COSHATTAN.repo, 'GitHub', 'btn')}</div>
-    </div>
-
-    <div class="star-grid">
-      <div class="prose">${COSHATTAN.body.map((p) => `<p>${p}</p>`).join('')}</div>
-      <div class="who spot">
-        <p class="mini">The experience</p>
-        <div class="seg small" role="tablist" data-group="cosh-scenes">
-          ${COSHATTAN.scenes.map((s, i) => `<button type="button" role="tab" aria-selected="${i === 0}" data-cscene="${s.key}">${s.label}</button>`).join('')}
-        </div>
-        <p class="who-text" data-panel="cosh-scenes">${COSHATTAN.scenes[0].text}</p>
-      </div>
-    </div>
-
-    <h3 class="h3">What I crafted</h3>
-    <div class="owned">
-      ${COSHATTAN.crafted.map((o, i) => `<div class="card spot"><i>${String(i + 1).padStart(2, '0')}</i><h4>${o.t}</h4><p>${o.d}</p></div>`).join('')}
-    </div>
-
-    <div class="writing spot">
-      <div>
-        <p class="mini">Written on the billboards</p>
-        <h3>Just feel the story, not the words.</h3>
-        <p>The Times Square screens don't sell anything. They carry the three lines the whole piece is about.</p>
-      </div>
-      <ul>${COSHATTAN.lines.map((w) => `<li>${w}</li>`).join('')}</ul>
-    </div>
-
-    <div class="stack"><span class="mini">Stack</span>${chips(COSHATTAN.stack)}</div>
-  </article>
-
-  <article class="star client reveal">
-    <div class="star-head">
-      <p class="badge"><span aria-hidden="true">&#10010;</span> Startup project</p>
-      <h2>Aurest Biotech</h2>
-      <p class="star-tag">${AUREST.tagline} <span>Design & full stack · Built for a startup</span></p>
-      <div class="link-row">${ext(AUREST.url, 'aurestbiotech.com','btn primary')}${ext(AUREST.repo, 'GitHub', 'btn')}</div>
-    </div>
-
-    <div class="star-grid">
-      <div class="prose">${AUREST.body.map((p) => `<p>${p}</p>`).join('')}</div>
-      <div class="who spot">
-        <p class="mini">Scroll through the site</p>
-        <div class="seg small" role="tablist" data-group="aurest-scenes">
-          ${AUREST.scenes.map((s, i) => `<button type="button" role="tab" aria-selected="${i === 0}" data-ascene="${s.key}">${s.label}</button>`).join('')}
-        </div>
-        <p class="who-text" data-panel="aurest-scenes">${AUREST.scenes[0].text}</p>
-      </div>
-    </div>
-
-    <h3 class="h3">What I built</h3>
-    <div class="owned">
-      ${AUREST.crafted.map((o, i) => `<div class="card spot"><i>${String(i + 1).padStart(2, '0')}</i><h4>${o.t}</h4><p>${o.d}</p></div>`).join('')}
-    </div>
-
-    <div class="writing spot">
-      <div>
-        <p class="mini">The story on the page</p>
-        <h3>Hard science, said simply.</h3>
-        <p>A biotech site can easily drown people in jargon. I kept every section to one clear idea, so a doctor, an investor or a student can all follow it.</p>
-      </div>
-      <ul>${AUREST.lines.map((w) => `<li>${w}</li>`).join('')}</ul>
-    </div>
-
-    <div class="stack"><span class="mini">Stack</span>${chips(AUREST.stack)}</div>
-  </article>
-
-  <article class="star pink reveal">
-    <div class="star-head">
-      <p class="badge"><span aria-hidden="true">&#10010;</span> Startup project</p>
-      <h2>DFORR</h2>
-      <p class="star-tag">${DFORR.tagline} <span>Design & development · Built for a startup</span></p>
-      <div class="link-row">${ext(DFORR.url, 'dforr.vercel.app', 'btn primary')}${ext(DFORR.repo, 'GitHub', 'btn')}</div>
-    </div>
-
-    <div class="star-grid">
-      <div class="prose">${DFORR.body.map((p) => `<p>${p}</p>`).join('')}</div>
-      <div class="who spot">
-        <p class="mini">Scroll through the site</p>
-        <div class="seg small" role="tablist" data-group="dforr-scenes">
-          ${DFORR.scenes.map((s, i) => `<button type="button" role="tab" aria-selected="${i === 0}" data-dscene="${s.key}">${s.label}</button>`).join('')}
-        </div>
-        <p class="who-text" data-panel="dforr-scenes">${DFORR.scenes[0].text}</p>
-      </div>
-    </div>
-
-    <h3 class="h3">What I built</h3>
-    <div class="owned">
-      ${DFORR.crafted.map((o, i) => `<div class="card spot"><i>${String(i + 1).padStart(2, '0')}</i><h4>${o.t}</h4><p>${o.d}</p></div>`).join('')}
-    </div>
-
-    <div class="writing spot">
-      <div>
-        <p class="mini">The story on the page</p>
-        <h3>Selling a feeling before the app exists.</h3>
-        <p>There's nothing to download yet, so the page shows one evening in Maya and lets you feel it, instead of listing features.</p>
-      </div>
-      <ul>${DFORR.lines.map((w) => `<li>${w}</li>`).join('')}</ul>
-    </div>
-
-    <div class="stack"><span class="mini">Stack</span>${chips(DFORR.stack)}</div>
-  </article>
-
-  <article class="star ember reveal">
-    <div class="star-head">
-      <p class="badge"><span aria-hidden="true">&#10038;</span> Client project</p>
-      <h2>Pankaj Sharma</h2>
-      <p class="star-tag">${PANKAJ.tagline} <span>Design & development · Built for a client</span></p>
-      <div class="link-row">${ext(PANKAJ.url, 'pankajdforr.vercel.app', 'btn primary')}${ext(PANKAJ.repo, 'GitHub', 'btn')}</div>
-    </div>
-
-    <div class="star-grid">
-      <div class="prose">${PANKAJ.body.map((p) => `<p>${p}</p>`).join('')}</div>
-      <div class="who spot">
-        <p class="mini">Scroll through the site</p>
-        <div class="seg small" role="tablist" data-group="pankaj-scenes">
-          ${PANKAJ.scenes.map((s, i) => `<button type="button" role="tab" aria-selected="${i === 0}" data-pscene="${s.key}">${s.label}</button>`).join('')}
-        </div>
-        <p class="who-text" data-panel="pankaj-scenes">${PANKAJ.scenes[0].text}</p>
-      </div>
-    </div>
-
-    <h3 class="h3">What I built</h3>
-    <div class="owned">
-      ${PANKAJ.crafted.map((o, i) => `<div class="card spot"><i>${String(i + 1).padStart(2, '0')}</i><h4>${o.t}</h4><p>${o.d}</p></div>`).join('')}
-    </div>
-
-    <div class="writing spot">
-      <div>
-        <p class="mini">The story on the page</p>
-        <h3>A founder, not a résumé.</h3>
-        <p>The company has its own site. This one had to show the person behind it: what he believes first, then what he has built.</p>
-      </div>
-      <ul>${PANKAJ.lines.map((w) => `<li>${w}</li>`).join('')}</ul>
-    </div>
-
-    <div class="stack"><span class="mini">Stack</span>${chips(PANKAJ.stack)}</div>
-  </article>
-
-  <article class="star showcase reveal">
-    <div class="star-head">
-      <p class="badge"><span aria-hidden="true">&#10022;</span> Creative showcase</p>
-      <h2>Moryacreativity</h2>
-      <p class="star-tag">${MORYACREATIVITY.tagline} <span>Design, 3D & development · Solo project</span></p>
-      <div class="link-row">${ext(MORYACREATIVITY.url, 'moryacreativity.vercel.app', 'btn primary')}${ext(MORYACREATIVITY.repo, 'GitHub', 'btn')}</div>
-    </div>
-
-    <div class="star-grid">
-      <div class="prose">${MORYACREATIVITY.body.map((p) => `<p>${p}</p>`).join('')}</div>
-      <div class="who spot">
-        <p class="mini">Through the lens</p>
-        <div class="seg small" role="tablist" data-group="morya-scenes">
-          ${MORYACREATIVITY.scenes.map((s, i) => `<button type="button" role="tab" aria-selected="${i === 0}" data-mscene="${s.key}">${s.label}</button>`).join('')}
-        </div>
-        <p class="who-text" data-panel="morya-scenes">${MORYACREATIVITY.scenes[0].text}</p>
-      </div>
-    </div>
-
-    <h3 class="h3">What I crafted</h3>
-    <div class="owned">
-      ${MORYACREATIVITY.crafted.map((o, i) => `<div class="card spot"><i>${String(i + 1).padStart(2, '0')}</i><h4>${o.t}</h4><p>${o.d}</p></div>`).join('')}
-    </div>
-
-    <div class="writing spot">
-      <div>
-        <p class="mini">How you move through it</p>
-        <h3>Every project deserves an entrance.</h3>
-        <p>A grid of thumbnails says nothing. A dive through a lens makes you curious about what is waiting on the other side.</p>
-      </div>
-      <ul>${MORYACREATIVITY.lines.map((w) => `<li>${w}</li>`).join('')}</ul>
-    </div>
-
-    <div class="stack"><span class="mini">Stack</span>${chips(MORYACREATIVITY.stack)}</div>
-  </article>
-
-  <section class="block reveal">
-    <h2 class="h2">More things I built</h2>
-    <p class="sub">Pick a project. Each one has a small live piece you can play with.</p>
-    <div class="proj-tabs" role="tablist">
-      ${PROJECTS.map((p, i) => `<button type="button" role="tab" aria-selected="${i === 0}" data-proj="${p.key}"><b>${p.name}</b><span>${p.kind}</span></button>`).join('')}
-    </div>
-    <div class="proj-panel" data-panel="proj"></div>
-  </section>
+  ${CATS.map((c) => `
+  <section class="wgroup cat-${c.key} reveal" data-cat="${c.key}">
+    <header class="wgroup-head">
+      <p class="badge"><span aria-hidden="true">${c.icon}</span> ${c.title}</p>
+      <p class="sub">${c.sub}</p>
+    </header>
+    <div class="wgrid">${WORK.filter((w) => w.cat === c.key).map(workCard).join('')}</div>
+  </section>`).join('')}
   ${contactBlock()}`;
 }
-
-function projectPanel(key) {
-  const p = PROJECTS.find((x) => x.key === key);
-  const links = [ext(p.repo, 'GitHub', 'btn')];
-  if (p.live) links.unshift(ext(p.live, p.live.replace('https://', ''), 'btn primary'));
-  return `
-    <div class="proj-top">
-      <div>
-        <h3 class="proj-name">${p.name}</h3>
-        <p class="proj-tag">${p.tagline}</p>
-      </div>
-      <div class="link-row">${links.join('')}</div>
-    </div>
-    <div class="proj-stats">${p.stats.map(([n, l]) => `<div><b>${n}</b><span>${l}</span></div>`).join('')}</div>
-    <div class="proj-grid">
-      <div class="prose">${p.body.map((x) => `<p>${x}</p>`).join('')}
-        <ul class="ticks">${p.extras.map((e) => `<li>${e}</li>`).join('')}</ul>
-      </div>
-      <div class="demo spot">${demo(p)}</div>
-    </div>
-    <div class="stack"><span class="mini">Stack</span>${chips(p.stack)}</div>`;
-}
-
-function demo(p) {
-  if (p.demo === 'pipeline') return `
-    <div class="demo-head"><p class="mini">How a single reply happens</p>
-      <div><button type="button" class="ghost" data-pipe-play>Talk</button><button type="button" class="ghost" data-pipe-cut>Interrupt</button></div></div>
-    <ol class="pipe">${p.pipeline.map((s, i) => `<li><button type="button" data-pipe="${i}">${s.t}</button></li>`).join('')}</ol>
-    <p class="demo-text" data-panel="pipe">Press <b>Talk</b> to follow your voice through the pipeline, or tap any stage.</p>`;
-  if (p.demo === 'roles') return `
-    <div class="demo-head"><p class="mini">Who sees what</p></div>
-    <div class="seg small" role="tablist" data-group="jroles">
-      ${p.roles.map((r, i) => `<button type="button" role="tab" aria-selected="${i === 0}" data-jrole="${i}">${r.t}</button>`).join('')}
-    </div>
-    <div data-panel="jroles">${rolePanel(p.roles[0])}</div>`;
-  return `
-    <div class="demo-head"><p class="mini">The service map</p><button type="button" class="ghost" data-trace>Trace a request</button></div>
-    <div class="svc">${p.services.map((s, i) => `<button type="button" data-svc="${i}" class="${i === 0 ? 'gw' : ''}"><b>${s.t}</b><span>:${s.p}</span></button>`).join('')}</div>
-    <p class="demo-text" data-panel="svc">Tap a service to see what it does, or trace what happens when you hit <b>Generate</b>.</p>`;
-}
-
-const rolePanel = (r) => `<p class="demo-text">${r.d}</p><div class="chips">${chips(r.pages, 'chip dim')}</div>`;
 
 function experience() {
   return `
@@ -798,74 +586,6 @@ function swap(el, html) {
   setTimeout(() => { el.innerHTML = html; el.classList.remove('swapping'); }, reduce ? 0 : 160);
 }
 
-let stepTimer = null, pipeTimer = null, traceTimer = null;
-
-function setStep(i) {
-  const steps = body.querySelector('.steps');
-  if (!steps) return;
-  const btns = [...steps.querySelectorAll('[data-step]')];
-  btns.forEach((b, j) => { b.setAttribute('aria-selected', String(j === i)); b.classList.toggle('done', j < i); });
-  steps.querySelector('.steps-bar span').style.width = `${(i / (btns.length - 1)) * 100}%`;
-  swap(body.querySelector('[data-panel="steps"]'), ACADEX.steps[i].d);
-}
-function playJourney(btn) {
-  clearInterval(stepTimer);
-  let i = 0; setStep(0);
-  btn.textContent = 'Playing…';
-  stepTimer = every(() => {
-    i++;
-    if (i >= ACADEX.steps.length) { clearInterval(stepTimer); btn.textContent = 'Replay'; return; }
-    setStep(i);
-  }, 1800);
-}
-
-function setPipe(i, text) {
-  const nodes = [...body.querySelectorAll('[data-pipe]')];
-  nodes.forEach((n, j) => { n.classList.toggle('on', j === i); n.classList.toggle('past', j < i); });
-  const s = PROJECTS[0].pipeline[i];
-  swap(body.querySelector('[data-panel="pipe"]'), text || `<b>${s.t}.</b> ${s.d}`);
-}
-function playPipe() {
-  clearInterval(pipeTimer);
-  let i = 0; setPipe(0);
-  pipeTimer = every(() => {
-    i++;
-    if (i >= PROJECTS[0].pipeline.length) { clearInterval(pipeTimer); swap(body.querySelector('[data-panel="pipe"]'), 'That whole trip takes <b>under 400ms</b>. Now try <b>Interrupt</b>.'); return; }
-    setPipe(i);
-  }, 1100);
-}
-function cutPipe() {
-  clearInterval(pipeTimer);
-  const nodes = [...body.querySelectorAll('[data-pipe]')];
-  nodes.forEach((n) => n.classList.remove('on', 'past'));
-  nodes[4].classList.add('cut');
-  later(() => { nodes[4].classList.remove('cut'); setPipe(1, '<b>Barge-in.</b> You started talking, so Silero VAD caught it and the agent stopped speaking right away. Now it is listening again.'); }, 500);
-}
-
-function setSvc(i, text) {
-  const s = PROJECTS[2].services[i];
-  body.querySelectorAll('[data-svc]').forEach((b, j) => b.classList.toggle('on', j === i));
-  swap(body.querySelector('[data-panel="svc"]'), text || `<b>${s.t}-service :${s.p}</b>. ${s.d}`);
-}
-const TRACE = [
-  [0, 'You hit <b>Generate</b>. The gateway tags the request with an ID and forwards it.'],
-  [5, 'The <b>email</b> service picks it up.'],
-  [3, '<b>usage</b> reserves one credit, just in case.'],
-  [4, '<b>ai</b> writes the email with Groq.'],
-  [5, '<b>email</b> saves the draft to your history.'],
-  [3, '<b>usage</b> commits the credit. If anything failed, it would have been released instead.'],
-];
-function trace(btn) {
-  clearInterval(traceTimer);
-  let i = 0; setSvc(...TRACE[0]);
-  btn.textContent = 'Tracing…';
-  traceTimer = every(() => {
-    i++;
-    if (i >= TRACE.length) { clearInterval(traceTimer); btn.textContent = 'Trace again'; return; }
-    setSvc(...TRACE[i]);
-  }, 1500);
-}
-
 page.addEventListener('click', (e) => {
   const t = e.target.closest('button, a');
   if (!t || !page.contains(t)) return;
@@ -886,26 +606,18 @@ page.addEventListener('click', (e) => {
     body.querySelectorAll('.pill').forEach((p) => p.classList.toggle('dimmed', d.skill !== 'all' && p.dataset.cat !== d.skill));
     return;
   }
-  if (d.arole) { select(t.parentElement, t); swap(body.querySelector('[data-panel="acadex-roles"]'), ACADEX.roles.find((r) => r.key === d.arole).text); return; }
-  if (d.cscene) { select(t.parentElement, t); swap(body.querySelector('[data-panel="cosh-scenes"]'), COSHATTAN.scenes.find((s) => s.key === d.cscene).text); return; }
-  if (d.ascene) { select(t.parentElement, t); swap(body.querySelector('[data-panel="aurest-scenes"]'), AUREST.scenes.find((s) => s.key === d.ascene).text); return; }
-  if (d.dscene) { select(t.parentElement, t); swap(body.querySelector('[data-panel="dforr-scenes"]'), DFORR.scenes.find((s) => s.key === d.dscene).text); return; }
-  if (d.pscene) { select(t.parentElement, t); swap(body.querySelector('[data-panel="pankaj-scenes"]'), PANKAJ.scenes.find((s) => s.key === d.pscene).text); return; }
-  if (d.mscene) { select(t.parentElement, t); swap(body.querySelector('[data-panel="morya-scenes"]'), MORYACREATIVITY.scenes.find((s) => s.key === d.mscene).text); return; }
-  if (d.step) { clearInterval(stepTimer); body.querySelector('[data-journey-play]').textContent = 'Play'; setStep(+d.step); return; }
-  if ('journeyPlay' in d) { playJourney(t); return; }
-  if (d.proj) {
-    select(t.parentElement, t);
-    clearInterval(pipeTimer); clearInterval(traceTimer);
-    swap(body.querySelector('[data-panel="proj"]'), projectPanel(d.proj));
+  if (d.work) {
+    t.parentElement.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b === t));
+    body.querySelectorAll('.wgroup').forEach((g) => { g.hidden = d.work !== 'all' && g.dataset.cat !== d.work; });
     return;
   }
-  if (d.pipe) { clearInterval(pipeTimer); setPipe(+d.pipe); return; }
-  if ('pipePlay' in d) { playPipe(); return; }
-  if ('pipeCut' in d) { cutPipe(); return; }
-  if (d.jrole) { select(t.parentElement, t); swap(body.querySelector('[data-panel="jroles"]'), rolePanel(PROJECTS[1].roles[+d.jrole])); return; }
-  if (d.svc) { clearInterval(traceTimer); body.querySelector('[data-trace]').textContent = 'Trace a request'; setSvc(+d.svc); return; }
-  if ('trace' in d) { trace(t); return; }
+  if (t.classList.contains('wmore')) {
+    const more = t.closest('.wcard').querySelector('.wbody'), open = more.hidden;
+    more.hidden = !open;
+    t.setAttribute('aria-expanded', String(open));
+    t.textContent = open ? 'Show less' : 'Read more';
+    return;
+  }
   if (d.llm) { select(t.parentElement, t); swap(body.querySelector('[data-panel="llm"]'), llmPanel(d.llm)); return; }
   if (d.loop) {
     body.querySelectorAll('[data-loop]').forEach((b, j) => b.classList.toggle('on', j === +d.loop));
@@ -1012,7 +724,6 @@ function mount(name) {
   page.querySelectorAll('.page-nav a').forEach((a) => a.classList.toggle('on', a.dataset.page === (NAV_OF[name] || name)));
   document.title = `Shaan | ${name[0].toUpperCase()}${name.slice(1)}`;
   if (name === 'about') body.querySelector('[data-panel="modes"]').innerHTML = modePanel(ABOUT.modes[0].key);
-  if (name === 'projects') body.querySelector('[data-panel="proj"]').innerHTML = projectPanel(PROJECTS[0].key);
   body.querySelectorAll('.reveal').forEach((el) => seen.observe(el));
 }
 

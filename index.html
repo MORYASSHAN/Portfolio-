@@ -75,7 +75,7 @@
     </svg>
   </button>
 
-  <button type="button" id="skip" hidden>Skip this part if you enjoyed the show earlier <span aria-hidden="true">&rarr;</span></button>
+  <button type="button" id="skip" hidden>Back to the portfolio <span aria-hidden="true">&rarr;</span></button>
 
   <!-- links marked data-todo are placeholders until the real ones come in -->
   <main id="home" hidden>
@@ -95,6 +95,15 @@
     <div class="home-intro">
       <h1>Hi, I'm Shaan</h1>
       <p>Designer, developer &amp; storyteller.</p>
+      <!-- the Vegas show is opt-in now: this card starts it (src/main.js playShow) -->
+      <button type="button" id="story-btn" class="story-btn">
+        <span class="sb-play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg></span>
+        <span class="sb-text">
+          <span class="sb-kicker">Story mode &middot; 2 min &middot; sound on</span>
+          <span class="sb-title">Vegas After Dark</span>
+          <span class="sb-line" aria-hidden="true"></span>
+        </span>
+      </button>
     </div>
 
     <footer class="home-contact">

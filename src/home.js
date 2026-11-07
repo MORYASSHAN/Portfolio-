@@ -23,6 +23,7 @@ function loadImage(src) {
 function build(img) {
   const dpr = Math.min(window.devicePixelRatio, 2);
   const w = canvas.clientWidth, h = canvas.clientHeight;
+  if (!w || !h) return;                           // not laid out yet (e.g. a zero-size window); the resize handler rebuilds
   canvas.width = w * dpr; canvas.height = h * dpr;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
@@ -131,4 +132,18 @@ export function openHome(x = innerWidth / 2, y = innerHeight / 2) {
   startPortrait();
   requestAnimationFrame(() => home.classList.add('in'));
   return anim.finished.then(() => { anim.cancel(); home.style.clipPath = 'none'; });
+}
+
+// the reverse: the landing page shrinks into (x, y), e.g. the story button, then hides
+export function closeHome(x = innerWidth / 2, y = innerHeight / 2) {
+  const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+  const anim = home.animate(
+    [{ clipPath: `circle(${r}px at ${x}px ${y}px)` }, { clipPath: `circle(0px at ${x}px ${y}px)` }],
+    { duration: 900, easing: 'cubic-bezier(.65, 0, .35, 1)', fill: 'forwards' },
+  );
+  return anim.finished.then(() => {
+    home.hidden = true;
+    home.classList.remove('in');
+    anim.cancel();
+  });
 }

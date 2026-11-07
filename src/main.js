@@ -3,7 +3,8 @@ import { createVegasScene } from './vegasScene.js';
 import { createShooter } from './shooter.js';
 import { createHud } from './hud.js';
 import { openHost, say, choose, leaveHost, hideHost, closeHost, abortHost } from './intro.js';
-import { openHome } from './home.js';
+import { openHome, closeHome } from './home.js';
+import { onStoryClick, startStoryTeaser, stopStoryTeaser, markReplay } from './storyButton.js';
 import { hasPage, showPage } from './pages.js';
 import { unlockAudio, boom, screenCrack } from './sound.js';
 import { preloadFinale, startFinale } from './finale.js';
@@ -23,7 +24,9 @@ vegas.onPan(hud.pan);                       // phones: the look-around bar track
 hud.panDrag((f) => vegas.setPan(f - 0.5));  // ...and dragging it slides the view
 
 const skip = document.getElementById('skip');
+const hudEl = document.getElementById('hud');
 let level = 1, levelCleared = false, signDown = false, reloadOffered = false;
+let played = false;   // the show runs once per page load; watching it again reloads with ?play
 
 unlockAudio();
 // dev shortcut: localhost:5173/#finale jumps straight to the ending, once (the hash is cleared so a reload plays normally)
@@ -34,17 +37,42 @@ if (import.meta.env.DEV && location.hash === '#finale') {
   history.replaceState(null, '', location.pathname);
   skipToLevelTwo();
 } else if (hasPage(location.hash.slice(1))) deepLink(location.hash.slice(1));
-else opening();
+else if (new URLSearchParams(location.search).has('play')) {
+  history.replaceState(null, '', location.pathname);
+  hideHost();
+  opening();
+} else landing();
+
+// the site opens on the portfolio itself; the Vegas show waits behind the story button (bottom-left)
+async function landing() {
+  hudEl.hidden = true;   // the scene's HUD stays out of sight until the show starts
+  hideGate();
+  hideHost();
+  showMusicButton(false);
+  await openHome();
+  startStoryTeaser();
+}
+
+onStoryClick(async (btn) => {
+  if (played) { location.href = `${location.pathname}?play`; return; }
+  played = true;
+  stopStoryTeaser();
+  const r = btn.getBoundingClientRect();
+  await closeHome(r.left + r.width / 2, r.top + r.height / 2);
+  opening();
+});
 
 // a shared link like /#projects skips the show and lands on that page, with the portrait behind it
 // the loading gate is in the HTML from the first paint; paths that skip the show remove it
 function hideGate() { document.getElementById('enter').hidden = true; }
 
 async function deepLink(name) {
+  hudEl.hidden = true;
   hideGate();
   showMusicButton(false);
   hideHost();
   await openHome();
+  startStoryTeaser();
   showPage(name, { push: false });
 }
 
@@ -72,13 +100,16 @@ async function skipToLevelTwo() {
   hud.objective('Destroy the Vegas board to evacuate');
 }
 
-// returning visitors can jump straight to the landing page from the opening
+// anyone who changes their mind can jump back to the portfolio from the opening
 skip.addEventListener('click', async () => {
+  played = true;
+  markReplay();
   const r = skip.getBoundingClientRect();
   skip.classList.add('gone');
   abortHost();
   showMusicButton(false);
   await openHome(r.left + r.width / 2, r.top + r.height / 2);
+  startStoryTeaser();
   hideHost();
   skip.hidden = true;
 }, { once: true });
@@ -129,6 +160,7 @@ function enterGate() {
 }
 
 async function opening() {
+  hudEl.hidden = false;
   await enterGate();
   skip.hidden = false;
   await openHost();
@@ -218,7 +250,10 @@ async function finale(res) {
   // "Know more" at the end of the story opens the same landing page
   const end = startFinale(snap, res.x, res.y, async (btn) => {
     const r = btn.getBoundingClientRect();
+    played = true;
+    markReplay();
     await openHome(r.left + r.width / 2, r.top + r.height / 2);
+    startStoryTeaser();
     end.stop();
   });
   vegas.stop();
